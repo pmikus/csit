@@ -67,7 +67,7 @@ jobs:
       matrix:
         os: [ubuntu2404]
         executor_arch: [x86_64]
-        builder_type: [prod]
+        builder_type: [sandbox]
 
     steps:
       - name: Clear votes
