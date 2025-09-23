@@ -54,7 +54,7 @@ concurrency:
 
 jobs:
   tox:
-    name: Checkstyle on ${{ matrix.os }} ${{ matrix.executor_arch }}
+    name: csit-verify-tox-${{ matrix.os }} ${{ matrix.executor_arch }}
     runs-on:
       - self-hosted
       - nomad
@@ -68,6 +68,9 @@ jobs:
         os: [ubuntu2404]
         executor_arch: [x86_64]
         builder_type: [sandbox]
+
+    env:
+      JOB_NAME: "${{ github.job }}-${{ matrix.os }}-${{ matrix.executor_arch }}"
 
     steps:
       - name: Gerrit Checkout
