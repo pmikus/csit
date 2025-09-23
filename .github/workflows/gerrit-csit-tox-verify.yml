@@ -83,9 +83,8 @@ jobs:
 
       - name: Setup Environment
         run: |
-          ls -al .github/scripts/
-          pwd
-          .github/scripts/setup_executor_env.sh
+          ls -al .ci
+          .ci/setup_executor_env.sh
 
       - name: Run tox
         run: |
