@@ -83,7 +83,7 @@ jobs:
 
       - name: Setup Environment
         run: |
-          ls -al
+          ls -al .github/scripts/
           pwd
           .github/scripts/setup_executor_env.sh
 
