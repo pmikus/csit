@@ -99,6 +99,9 @@ jobs:
           repository: ${{ inputs.TARGET_REPO }}
           ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
 
+      - name: "Retrieve GIT commit message"
+        uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
+
       - name: Setup Environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
