@@ -29,3 +29,23 @@ runs:
         echo "GITHUB_REF: ${GITHUB_REF:-Not set}"
         echo "GITHUB_SHA: ${GITHUB_SHA:-Not set}"
         echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME:-Not set}"
+
+    - name: "Show Python Packages"
+      id: python_packages
+      shell: bash
+      run: |
+        pip3 list 2>/dev/null | column -t || true
+
+    - name: "Show OS Packages"
+      id: os_packages
+      shell: bash
+      run: |
+        . /etc/os-release
+
+        if [ "${ID}" = "ubuntu" ] || [ "${ID}" = "debian" ]; then
+          dpkg-query -W -f='${binary:Package}\t${Version}\n' | column -t || true
+        elif [ "${ID}" = "centos" ]; then
+          yum list installed || true
+        else
+          echo "Unsupported OS for package listing"
+        fi
