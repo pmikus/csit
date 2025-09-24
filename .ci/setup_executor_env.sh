@@ -48,50 +48,6 @@ GITHUB_RUN_ID="${GITHUB_RUN_ID:-Unknown}"
 
 log_line() { echo "$long_line"; }
 
-print_runner_attrs() {
-  log_line
-  echo "GitHub Runner Attributes:"
-  echo "OS: ${OS_ID}-${OS_VERSION_ID}"
-  echo "Arch: ${OS_ARCH}"
-  echo "GitHub Runner: ${GITHUB_RUNNER}"
-  echo "GitHub Workflow: ${GITHUB_WORKFLOW}"
-  echo "GitHub Run ID: ${GITHUB_RUN_ID}"
-  echo "Runner Hostname: $(hostname)"
-}
-
-show_os_packages() {
-  [ "${VERBOSE_PACKAGES}" = "1" ] || { echo "Skipping OS package list (VERBOSE_PACKAGES=0)"; return 0; }
-  log_line
-  echo "Executor package list:"
-  if [ "${OS_ID}" = "ubuntu" ] || [ "${OS_ID}" = "debian" ]; then
-    dpkg-query -W -f='${binary:Package}\t${Version}\n' | column -t || true
-  elif [ "${OS_ID}" = "centos" ]; then
-    yum list installed || true
-  else
-    echo "Unsupported OS for package listing"
-  fi
-}
-
-show_python_packages() {
-  [ "${VERBOSE_PY}" = "1" ] || { echo "Skipping Python package list (VERBOSE_PY=0)"; return 0; }
-  log_line
-  echo "Python3 package list:"
-  pip3 list 2>/dev/null | column -t || true
-}
-
-show_downloads_cache() {
-  log_line
-  echo "Executor Downloads cache '${downloads_cache}':"
-  ls -lh "${downloads_cache}" || true
-}
-
-show_resolver() {
-  log_line
-  echo "DNS nameserver config in '/etc/resolv.conf':"
-  # Mask potential search domains if needed; currently print full
-  cat /etc/resolv.conf || true
-}
-
 setup_ccache() {
   log_line
   if command -v ccache >/dev/null 2>&1; then
@@ -128,26 +84,9 @@ prepare_workspace_cache() {
   log_line
 }
 
-show_github_env() {
-  log_line
-  echo "GitHub Actions Environment:"
-  echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE:-Not set}"
-  echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-Not set}"
-  echo "GITHUB_REF: ${GITHUB_REF:-Not set}"
-  echo "GITHUB_SHA: ${GITHUB_SHA:-Not set}"
-  echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME:-Not set}"
-  log_line
-}
-
 # Execution sequence
-print_runner_attrs
-show_os_packages
-show_python_packages
-show_downloads_cache
-show_resolver
 setup_ccache
 prepare_workspace_cache
-show_github_env
 
 # Success footer
 echo "Executor environment setup complete."
