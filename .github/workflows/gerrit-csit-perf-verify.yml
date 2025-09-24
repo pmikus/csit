@@ -1,5 +1,5 @@
 ---
-name: CSIT Tox
+name: CSIT Performance
 
 # yamllint disable-line rule:truthy
 on:
@@ -53,8 +53,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  csit-verify-tox:
-    name: csit-verify-tox-${{ matrix.os }}-${{ matrix.executor_arch }}
+  csit-vpp-perf-verify:
+    name: csit-vpp-perf-verify-${{ matrix.os }}-${{ matrix.executor_arch }}
     runs-on:
       - self-hosted
       - nomad
@@ -65,12 +65,15 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu2404]
-        executor_arch: [x86_64]
         builder_type: [sandbox]
+        include:
+          - stream: "master"
+            node: "2n-icx"
+            os: ubuntu2404
+            executor_arch: x86_64
 
     env:
-      JOB_NAME: "${{ github.job }}-${{ matrix.os }}-${{ matrix.executor_arch }}"
+      JOB_NAME: "${{ github.job }}-${{ matrix.stream }}-${{ matrix.node }}"
 
     steps:
       - name: Gerrit Checkout
@@ -89,12 +92,12 @@ jobs:
 
       - name: Run tox
         run: |
-          source ./resources/libraries/bash/entry/tox.sh
+          source ./resources/libraries/bash/entry/bootstrap_verify_perf.sh"
 
       - name: Archive Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-${{ matrix.os }}-${{ matrix.executor_arch }}-logs
-          path: archives/
+          name: ${{ env.JOB_NAME }}-${{ github.run_number }}
+          path: archives/log.html
           if-no-files-found: "ignore"
