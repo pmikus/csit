@@ -89,7 +89,6 @@ jobs:
 
       - name: Run tox
         run: |
-          set -exuo pipefail
           source ./resources/libraries/bash/entry/tox.sh
 
       - name: Archive Logs
