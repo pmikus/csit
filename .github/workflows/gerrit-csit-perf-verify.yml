@@ -67,7 +67,19 @@ jobs:
       matrix:
         builder_type: [sandbox]
         include:
-          - stream: "master"
+          - stream: [master, 2506]
+            node: "2n-aws"
+            os: ubuntu2404
+            executor_arch: x86_64
+          - stream: [master, 2506]
+            node: "2n-c6in"
+            os: ubuntu2404
+            executor_arch: x86_64
+          - stream: [master, 2506]
+            node: "2n-c7gn"
+            os: ubuntu2404
+            executor_arch: aarch64
+          - stream: [master, 2506]
             node: "2n-icx"
             os: ubuntu2404
             executor_arch: x86_64
