@@ -7,7 +7,7 @@ Action to setup FD.io Nomad executor environment inside a GitHub action/workflow
 ## Usage Example
 
 ```yaml
-- name: "Configure GIT user for commit"
+- name: "Setup Environment"
   uses: fdio/csit/.github/actions/setup_executor_env@master
 ```
 
