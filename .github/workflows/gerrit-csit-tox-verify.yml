@@ -85,7 +85,7 @@ jobs:
           ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
 
       - name: Setup Environment
-        uses: fdio/csit/.github/actions/setup_executor_env@master
+        uses: pmikus/csit/.github/actions/setup_executor_env@master
 
       - name: Run tox
         run: |

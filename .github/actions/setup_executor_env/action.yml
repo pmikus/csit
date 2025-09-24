@@ -10,7 +10,10 @@ runs:
       id: attributes
       shell: bash
       run: |
-        echo "OS: ${OS_ID}-${OS_VERSION_ID}"
+        . /etc/os-release
+        OS_ARCH=$(uname -m)
+
+        echo "OS: ${ID:-unknown}-${VERSION_ID:-unknown}"
         echo "Arch: ${OS_ARCH}"
         echo "GitHub Runner: ${RUNNER_NAME:-Unknown}"
         echo "GitHub Workflow: ${GITHUB_WORKFLOW:-Unknown}"
