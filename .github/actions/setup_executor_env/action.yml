@@ -1,0 +1,28 @@
+---
+name: "🛠️ Setup Executor Environment"
+description: |
+  This GitHub Action prepares FD.io executor environment.
+
+runs:
+  using: "composite"
+  steps:
+    - name: "GitHub Runner Attributes"
+      id: attributes
+      shell: bash
+      run: |
+        echo "OS: ${OS_ID}-${OS_VERSION_ID}"
+        echo "Arch: ${OS_ARCH}"
+        echo "GitHub Runner: ${RUNNER_NAME:-Unknown}"
+        echo "GitHub Workflow: ${GITHUB_WORKFLOW:-Unknown}"
+        echo "GitHub Run ID: ${GITHUB_RUN_ID:-Unknown}"
+        echo "Runner Hostname: $(hostname)"
+
+    - name: "GitHub Actions Environment"
+      id: environment
+      shell: bash
+      run: |
+        echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE:-Not set}"
+        echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-Not set}"
+        echo "GITHUB_REF: ${GITHUB_REF:-Not set}"
+        echo "GITHUB_SHA: ${GITHUB_SHA:-Not set}"
+        echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME:-Not set}"

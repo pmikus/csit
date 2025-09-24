@@ -85,11 +85,16 @@ jobs:
           ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
 
       - name: Setup Environment
-        run: |
-          ls -al .ci
-          .ci/setup_executor_env.sh
+        uses: fdio/csit/.github/actions/setup_executor_env@master
 
       - name: Run tox
         run: |
           set -exuo pipefail
           source ./resources/libraries/bash/entry/tox.sh
+
+      - name: Archive Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}-${{ matrix.os }}-${{ matrix.executor_arch }}-logs
+          path: archive/
