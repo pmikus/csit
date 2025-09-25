@@ -87,13 +87,13 @@ jobs:
 
       - name: "Retrieve GIT commit message"
         id: git_message
+        # yamllint disable-line rule:line-length
         uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
 
       - name: Setup Environment
-        id: setup_environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run Bootstrap
+      - name: Run Terraform Bootstrap
         run: |
           source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_verify.sh
 
@@ -132,13 +132,13 @@ jobs:
 
       - name: "Retrieve GIT commit message"
         id: git_message
+        # yamllint disable-line rule:line-length
         uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
 
       - name: Setup Environment
-        id: setup_environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run Bootstrap
+      - name: Run Terraform Bootstrap
         run: |
           source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_deploy.sh
 
@@ -146,6 +146,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}-logs
+          name: ${{ env.JOB_NAME }}-${{ github.run_number }}
           path: archives/
           if-no-files-found: "ignore"

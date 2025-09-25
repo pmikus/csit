@@ -70,7 +70,7 @@ jobs:
         builder_type: [sandbox]
 
     env:
-      JOB_NAME: "${{ github.job }}-${{ matrix.os }}-${{ matrix.executor_arch }}"
+      JOB_NAME: "${{ github.job }}}"
 
     steps:
       - name: Gerrit Checkout
@@ -86,13 +86,13 @@ jobs:
 
       - name: "Retrieve GIT commit message"
         id: git_message
+        # yamllint disable-line rule:line-length
         uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
 
       - name: Setup Environment
-        id: setup_environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run tox
+      - name: Run Tox
         run: |
           source ./resources/libraries/bash/entry/tox.sh
 
