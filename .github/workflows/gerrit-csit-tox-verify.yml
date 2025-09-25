@@ -1,5 +1,5 @@
 ---
-name: CSIT Tox
+name: csit-verify-tox
 
 # yamllint disable-line rule:truthy
 on:
@@ -53,8 +53,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  csit-verify-tox:
-    name: csit-verify-tox-${{ matrix.os }}-${{ matrix.executor_arch }}
+  verify:
+    name: csit-verify-tox
     runs-on:
       - self-hosted
       - nomad
@@ -70,7 +70,7 @@ jobs:
         builder_type: [sandbox]
 
     env:
-      JOB_NAME: "${{ github.job }}}"
+      JOB_NAME: "csit-verify-tox"
 
     steps:
       - name: Gerrit Checkout

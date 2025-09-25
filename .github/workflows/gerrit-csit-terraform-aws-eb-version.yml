@@ -1,5 +1,5 @@
 ---
-name: CSIT Terraform
+name: csit-terraform-aws-eb-version
 
 # yamllint disable-line rule:truthy
 on:
@@ -53,7 +53,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  csit-terraform-aws-eb-version-verify:
+  verify:
     name: csit-terraform-aws-eb-version-verify
     runs-on:
       - self-hosted
@@ -70,7 +70,7 @@ jobs:
         builder_type: [sandbox]
 
     env:
-      JOB_NAME: "${{ github.job }}"
+      JOB_NAME: "csit-terraform-aws-eb-version-verify"
       BUILD_ID: "${{ github.run_number }}"
 
     steps:
@@ -97,9 +97,9 @@ jobs:
         run: |
           source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_verify.sh
 
-  csit-terraform-aws-eb-version-deploy:
+  deploy:
     name: csit-terraform-aws-eb-version-deploy
-    needs: csit-terraform-aws-eb-version-verify
+    needs: verify
     runs-on:
       - self-hosted
       - nomad
@@ -115,7 +115,7 @@ jobs:
         builder_type: [sandbox]
 
     env:
-      JOB_NAME: "${{ github.job }}"
+      JOB_NAME: "csit-terraform-aws-eb-version-desploy"
       BUILD_ID: "${{ github.run_number }}"
 
     steps:
