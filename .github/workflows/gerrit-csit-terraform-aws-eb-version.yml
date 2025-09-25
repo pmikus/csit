@@ -54,7 +54,7 @@ concurrency:
 
 jobs:
   csit-terraform-aws-eb-version-deploy:
-    name: csit-terraform-aws-eb-version
+    name: csit-terraform-aws-eb-version-deploy
     runs-on:
       - self-hosted
       - nomad
@@ -71,6 +71,7 @@ jobs:
 
     env:
       JOB_NAME: "${{ github.job }}"
+      BUILD_ID: "${{ github.run_number }}"
 
     steps:
       - name: Gerrit Checkout
@@ -105,7 +106,7 @@ jobs:
           if-no-files-found: "ignore"
 
   csit-terraform-aws-eb-version-verify:
-    name: csit-terraform-aws-eb-version
+    name: csit-terraform-aws-eb-version-verify
     runs-on:
       - self-hosted
       - nomad
