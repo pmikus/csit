@@ -7,12 +7,6 @@ on:
   #schedule:
   #  - cron:  "30 22 * * 0-4"
   workflow_dispatch:
-    inputs:
-      TARGET_REPO:
-        # yamllint disable-line rule:line-length
-        description: "The target GitHub repository needing the required workflow"
-        required: true
-        type: string
 
 jobs:
   csit-vpp-perf-mrr-daily:
@@ -28,24 +22,48 @@ jobs:
     strategy:
       matrix:
         include:
-          #- node: "2n-aws"
-          #  os: ubuntu2404
-          #  executor_arch: x86_64
-          #- node: "2n-c6in"
-          #  os: ubuntu2404
-          #  executor_arch: x86_64
-          #- node: "2n-c7gn"
-          #  os: ubuntu2404
-          #  executor_arch: aarch64
-          - node: "2n-icx"
+          - node: 2n-grc
+            os: ubuntu2404
+            executor_arch: aarch64
+          - node: 2n-icx
             os: ubuntu2404
             executor_arch: x86_64
-          - node: "2n-grc"
+          - node: 2n-spr
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 2n-zn2
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3n-icx
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3n-alt
+            os: ubuntu2404
+            executor_arch: aarch64
+          - node: 3n-snr
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3n-icxd
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3na-spr
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3nb-spr
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 2n-emr
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3n-emr
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 3n-oct
             os: ubuntu2404
             executor_arch: aarch64
 
     env:
-      JOB_NAME: "${{ github.job }}"
+      JOB_NAME: "${{ github.job }}-master-${{ matrix.node }}"
 
     steps:
       - name: Gerrit Checkout
@@ -56,7 +74,6 @@ jobs:
           gerrit-project: "csit"
           gerrit-url: ${{ vars.GERRIT_URL }}
           delay: "0s"
-          repository: ${{ inputs.TARGET_REPO }}
           ref: refs/heads/master
 
       - name: "Retrieve GIT commit message"
@@ -65,10 +82,10 @@ jobs:
       - name: Setup Environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run Verify Performance
+      - name: Run Performance Bootstrap
         run: |
-          echo ${{ env.JOB_NAME }}
-          #source ./resources/libraries/bash/entry/bootstrap_verify_perf.sh"
+          csit_entry_dir="./resources/libraries/bash/entry"
+          #source ${csit_entry_dir}/with_oper_for_vpp.sh "bootstrap_verify_perf.sh"
 
       - name: Archive Logs
         if: always()
