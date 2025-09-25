@@ -54,7 +54,7 @@ concurrency:
 
 jobs:
   csit-vpp-perf-verify:
-    name: csit-vpp-perf-verify-${{ matrix.os }}-${{ matrix.executor_arch }}
+    name: csit-vpp-perf-verify-${{ matrix.os }}
     runs-on:
       - self-hosted
       - nomad
@@ -67,25 +67,21 @@ jobs:
       matrix:
         builder_type: [sandbox]
         include:
-          - stream: [master, 2506]
-            node: "2n-aws"
+          - node: "2n-aws"
             os: ubuntu2404
             executor_arch: x86_64
-          - stream: [master, 2506]
-            node: "2n-c6in"
+          - node: "2n-c6in"
             os: ubuntu2404
             executor_arch: x86_64
-          - stream: [master, 2506]
-            node: "2n-c7gn"
+          - node: "2n-c7gn"
             os: ubuntu2404
             executor_arch: aarch64
-          - stream: [master, 2506]
-            node: "2n-icx"
+          - node: "2n-icx"
             os: ubuntu2404
             executor_arch: x86_64
 
     env:
-      JOB_NAME: "${{ github.job }}-${{ matrix.stream }}-${{ matrix.node }}"
+      JOB_NAME: "${{ github.job }}-${{ inputs.GERRIT_BRANCH }}-${{ matrix.node }}"
 
     steps:
       - name: Gerrit Checkout
@@ -105,7 +101,7 @@ jobs:
       - name: Setup Environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run tox
+      - name: Run Verify Performance
         run: |
           source ./resources/libraries/bash/entry/bootstrap_verify_perf.sh"
 
