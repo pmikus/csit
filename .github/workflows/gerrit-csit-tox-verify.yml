@@ -59,14 +59,13 @@ jobs:
       - nomad
       - fdio:arch=${{ matrix.executor_arch }}
       - fdio:class=builder
-      - fdio:namespace=${{ matrix.builder_type }}
+      - fdio:namespace=sandbox
       - fdio:os=${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu2404]
         executor_arch: [x86_64]
-        builder_type: [sandbox]
 
     env:
       JOB_NAME: "csit-verify-tox"
