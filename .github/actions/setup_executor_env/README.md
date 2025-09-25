@@ -25,9 +25,6 @@ Sets the OS details used for Git operations inside other actions/workflows.
 
 <!-- markdownlint-enable MD013 -->
 
-The action has no outputs, but does provide summary step information when
-invoked.
-
 ## Requirements/Dependencies
 
 The git command-line tool must be available in the environment for the action

@@ -1,5 +1,5 @@
 ---
-name: CSIT Performance
+name: CSIT Terraform
 
 # yamllint disable-line rule:truthy
 on:
@@ -49,12 +49,12 @@ on:
 
 concurrency:
   # yamllint disable-line rule:line-length
-  group: csit-vpp-perf-verify-${{ github.workflow }}-${{ github.event.inputs.GERRIT_BRANCH }}-${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
+  group: csit-terraform-aws-eb-version-${{ github.workflow }}-${{ github.event.inputs.GERRIT_BRANCH }}-${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  csit-vpp-perf-verify:
-    name: csit-vpp-perf-verify-${{ matrix.os }}
+  csit-terraform-aws-eb-version-deploy:
+    name: csit-terraform-aws-eb-version
     runs-on:
       - self-hosted
       - nomad
@@ -65,23 +65,12 @@ jobs:
 
     strategy:
       matrix:
+        os: [ubuntu2404]
+        executor_arch: [x86_64]
         builder_type: [sandbox]
-        include:
-          - node: "2n-aws"
-            os: ubuntu2404
-            executor_arch: x86_64
-          - node: "2n-c6in"
-            os: ubuntu2404
-            executor_arch: x86_64
-          - node: "2n-c7gn"
-            os: ubuntu2404
-            executor_arch: aarch64
-          - node: "2n-icx"
-            os: ubuntu2404
-            executor_arch: x86_64
 
     env:
-      JOB_NAME: "${{ github.job }}-${{ inputs.GERRIT_BRANCH }}-${{ matrix.node }}"
+      JOB_NAME: "${{ github.job }}"
 
     steps:
       - name: Gerrit Checkout
@@ -96,19 +85,72 @@ jobs:
           ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
 
       - name: "Retrieve GIT commit message"
+        id: git_message
         uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
 
       - name: Setup Environment
+        id: setup_environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run Verify Performance
+      - name: Run tox
         run: |
-          source ./resources/libraries/bash/entry/bootstrap_verify_perf.sh"
+          source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_deploy.sh
+
+      - name: Archive Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}-logs
+          path: archives/
+          if-no-files-found: "ignore"
+
+  csit-terraform-aws-eb-version-verify:
+    name: csit-terraform-aws-eb-version
+    runs-on:
+      - self-hosted
+      - nomad
+      - fdio:arch=${{ matrix.executor_arch }}
+      - fdio:class=builder
+      - fdio:namespace=${{ matrix.builder_type }}
+      - fdio:os=${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu2404]
+        executor_arch: [x86_64]
+        builder_type: [sandbox]
+
+    env:
+      JOB_NAME: "${{ github.job }}"
+
+    steps:
+      - name: Gerrit Checkout
+        # yamllint disable-line rule:line-length
+        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+        with:
+          gerrit-refspec: ${{ inputs.GERRIT_REFSPEC }}
+          gerrit-project: ${{ inputs.GERRIT_PROJECT }}
+          gerrit-url: ${{ vars.GERRIT_URL }}
+          delay: "0s"
+          repository: ${{ inputs.TARGET_REPO }}
+          ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
+
+      - name: "Retrieve GIT commit message"
+        id: git_message
+        uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
+
+      - name: Setup Environment
+        id: setup_environment
+        uses: pmikus/csit/.github/actions/setup_executor_env@master
+
+      - name: Run tox
+        run: |
+          source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_verify.sh
 
       - name: Archive Logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.JOB_NAME }}-${{ github.run_number }}
-          path: archives/log.html
+          path: archives/
           if-no-files-found: "ignore"
