@@ -53,8 +53,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  csit-terraform-aws-eb-version-deploy:
-    name: csit-terraform-aws-eb-version-deploy
+  csit-terraform-aws-eb-version-verify:
+    name: csit-terraform-aws-eb-version-verify
     runs-on:
       - self-hosted
       - nomad
@@ -93,7 +93,52 @@ jobs:
         id: setup_environment
         uses: pmikus/csit/.github/actions/setup_executor_env@master
 
-      - name: Run tox
+      - name: Run Bootstrap
+        run: |
+          source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_verify.sh
+
+  csit-terraform-aws-eb-version-deploy:
+    name: csit-terraform-aws-eb-version-deploy
+    needs: csit-terraform-aws-eb-version-verify
+    runs-on:
+      - self-hosted
+      - nomad
+      - fdio:arch=${{ matrix.executor_arch }}
+      - fdio:class=builder
+      - fdio:namespace=${{ matrix.builder_type }}
+      - fdio:os=${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu2404]
+        executor_arch: [x86_64]
+        builder_type: [sandbox]
+
+    env:
+      JOB_NAME: "${{ github.job }}"
+      BUILD_ID: "${{ github.run_number }}"
+
+    steps:
+      - name: Gerrit Checkout
+        # yamllint disable-line rule:line-length
+        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+        with:
+          gerrit-refspec: ${{ inputs.GERRIT_REFSPEC }}
+          gerrit-project: ${{ inputs.GERRIT_PROJECT }}
+          gerrit-url: ${{ vars.GERRIT_URL }}
+          delay: "0s"
+          repository: ${{ inputs.TARGET_REPO }}
+          ref: refs/heads/${{ inputs.GERRIT_BRANCH }}
+
+      - name: "Retrieve GIT commit message"
+        id: git_message
+        uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
+
+      - name: Setup Environment
+        id: setup_environment
+        uses: pmikus/csit/.github/actions/setup_executor_env@master
+
+      - name: Run Bootstrap
         run: |
           source ./resources/libraries/bash/entry/bootstrap_aws_eb_version_deploy.sh
 
