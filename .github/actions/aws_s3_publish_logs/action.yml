@@ -21,9 +21,33 @@ runs:
 #    - name: "Upload Logs to S3 bucket"
 #      run: |
 #        python3 bootstrap_publish_logs.py deploy_s3 ${{ inputs.S3_BUCKET }} '${{ inputs.S3_PATH }}' '${{ github.workspace }}"
-    - name: "Install AWS CLI"
+
+    - name: Check if AWS CLI is pre-installed
+      id: aws-binary-check
       shell: bash
+      run: |
+        if command -v aws >/dev/null 2>&1; then
+            echo "AWS CLI is already installed. Skipping install."
+            echo "AWS_CLI_PREINSTALLED=true" >> "$GITHUB_OUTPUT"
+            aws --version
+            exit 0
+        fi
+        echo "AWS_CLI_PREINSTALLED=false" >> "$GITHUB_OUTPUT"
+
+    - name: Cache or Restore the zip
+      if: ${{ steps.aws-binary-check.outputs.AWS_CLI_PREINSTALLED == 'false' }}
+      uses: actions/cache@v4
+      id: aws-cli-cache
+      with:
+        path: ${{ runner.temp }}/aws-cli-cache/*.zip
+        key: ${{ runner.os }}-${{ runner.arch }}-aws-cli-v2-zip
+
+    - name: Install AWS CLI
+      shell: bash
+      if: ${{ steps.aws-binary-check.outputs.AWS_CLI_PREINSTALLED == 'false' }}
       env:
+        CACHE_HIT: ${{ steps.aws-cli-cache.outputs.cache-hit == 'true' }}
+        CACHE_ENABLED: 'true'
         CACHE_PATH: ${{ runner.temp }}/aws-cli-cache
       run: |
         ZIP_FILE_NAME="awscli-exe-linux-$(uname -m).zip"
@@ -37,9 +61,7 @@ runs:
         sudo ./aws/install --update
         rm -rf ./aws
 
-    - name: "Upload to S3"
+    - name: Upload to S3
       shell: bash
       run: |
-        aws --version #s3 cp ${{ github.workspace }} s3://${{ inputs.S3_BUCKET }}
-        echo ${{ inputs.S3_BUCKET }}
-        echo ${{ inputs.S3_PATH }}
+        echo "s3 cp ${{ github.workspace }} s3://${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}"
