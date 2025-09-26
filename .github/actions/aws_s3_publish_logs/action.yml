@@ -14,14 +14,15 @@ inputs:
     required: false
     default: "vex-yul-rot-jenkins-1/${{ github.job }}/${{ github.run_id }}/"
     type: string
+  ARCHIVES_PATH:
+    description: "AWS S3 Path"
+    required: false
+    default: "${{ github.workspace }}/archives/"
+    type: string
 
 runs:
   using: "composite"
   steps:
-#    - name: "Upload Logs to S3 bucket"
-#      run: |
-#        python3 bootstrap_publish_logs.py deploy_s3 ${{ inputs.S3_BUCKET }} '${{ inputs.S3_PATH }}' '${{ github.workspace }}"
-
     - name: Check if AWS CLI is pre-installed
       id: aws-binary-check
       shell: bash
@@ -61,7 +62,50 @@ runs:
         sudo ./aws/install --update
         rm -rf ./aws
 
-    - name: Upload to S3
+    - name: Upload archives directory content to S3
       shell: bash
       run: |
-        echo "s3 cp ${{ github.workspace }} s3://${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}"
+        echo "s3 cp ${{ github.workspace }}/archives s3://${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}"
+
+        # Usage: ./upload.sh /path/to/dir s3://my-bucket-name
+        SRC_DIR="${{ inputs.ARCHIVES_PATH }}"
+
+        # Guess MIME type from file extension
+        get_content_type() {
+          local file_ext="${1##*.}"
+          case "$file_ext" in
+            html) echo "text/html" ;;
+            css)  echo "text/css" ;;
+            js)   echo "application/javascript" ;;
+            json) echo "application/json" ;;
+            xml)  echo "application/xml" ;;
+            txt)  echo "text/plain" ;;
+            csv)  echo "text/csv" ;;
+            jpg|jpeg) echo "image/jpeg" ;;
+            png) echo "image/png" ;;
+            gif) echo "image/gif" ;;
+            svg) echo "image/svg+xml" ;;
+            pdf) echo "application/pdf" ;;
+            md)  echo "text/markdown" ;;
+            *)   echo "application/octet-stream" ;;
+          esac
+        }
+
+        export -f get_content_type
+
+        # Traverse and upload
+        find "$SRC_DIR" -type f | while read -r file; do
+          rel_path="${file#$SRC_DIR/}"        # relative path
+          tmp_file="$(mktemp).gz"             # temp gzip file
+          gzip -c "$file" > "$tmp_file"       # compress
+
+          content_type=$(get_content_type "$file")
+
+          echo "Uploading $rel_path.gz -> ${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}/$rel_path.gz (Content-Type: $content_type, gzip)"
+          #aws s3 cp "$tmp_file" "$S3_BUCKET/$rel_path.gz" \
+          #  --content-type "$content_type" \
+          #  --content-encoding "gzip"
+
+          rm -f "$tmp_file"
+        done
+
