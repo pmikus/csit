@@ -17,7 +17,7 @@ inputs:
   ARCHIVES_PATH:
     description: "AWS S3 Path"
     required: false
-    default: "${{ github.workspace }}/archives/"
+    default: "archives/"
     type: string
 
 runs:
@@ -68,7 +68,7 @@ runs:
         echo "s3 cp ${{ github.workspace }}/archives s3://${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}"
 
         # Usage: ./upload.sh /path/to/dir s3://my-bucket-name
-        SRC_DIR="${{ inputs.ARCHIVES_PATH }}"
+        SRC_DIR="."
 
         # Guess MIME type from file extension
         get_content_type() {
@@ -92,6 +92,8 @@ runs:
         }
 
         export -f get_content_type
+
+        pushd ${{ github.workspace }}/${{ inputs.ARCHIVES_PATH }}
 
         # Traverse and upload
         find "$SRC_DIR" -type f | while read -r file; do
