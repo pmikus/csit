@@ -28,14 +28,11 @@ runs:
       run: |
         ZIP_FILE_NAME="awscli-exe-linux-$(uname -m).zip"
 
-        # Create and enter temporary directory
         mkdir -p "$CACHE_PATH"
         cd "$CACHE_PATH"
 
-        # Downloading AWS CLI
         curl -fsSL --retry 3 --retry-delay 5 --connect-timeout 15 --max-time 60 -o "$ZIP_FILE_NAME" "https://awscli.amazonaws.com/$ZIP_FILE_NAME"
 
-        "Installing AWS CLI"
         unzip -o -q "$ZIP_FILE_NAME"
         sudo ./aws/install --update
         rm -rf ./aws
