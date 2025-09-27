@@ -65,28 +65,28 @@ runs:
     - name: Upload archives directory content to S3
       shell: bash
       run: |
-        echo "s3 cp ${{ github.workspace }}/archives s3://${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}"
-
-        # Usage: ./upload.sh /path/to/dir s3://my-bucket-name
-        SRC_DIR="."
-
-        # Guess MIME type from file extension
         get_content_type() {
           local file_ext="${1##*.}"
           case "$file_ext" in
-            html) echo "text/html" ;;
-            css)  echo "text/css" ;;
-            js)   echo "application/javascript" ;;
-            json) echo "application/json" ;;
             xml)  echo "application/xml" ;;
+            html) echo "text/html" ;;
             txt)  echo "text/plain" ;;
+            log)  echo "text/plain" ;;
+            css)  echo "text/css" ;;
+            md)  echo "text/markdown" ;;
+            rst)  echo "text/x-rst" ;;
             csv)  echo "text/csv" ;;
+            svg) echo "image/svg+xml" ;;
             jpg|jpeg) echo "image/jpeg" ;;
             png) echo "image/png" ;;
             gif) echo "image/gif" ;;
-            svg) echo "image/svg+xml" ;;
+            js)   echo "application/javascript" ;;
             pdf) echo "application/pdf" ;;
-            md)  echo "text/markdown" ;;
+            json) echo "application/json" ;;
+            otf) echo "application/otf" ;;
+            ttf) echo "application/ttf" ;;
+            woff) echo "application/woff" ;;
+            woff2) echo "application/woff2" ;;
             *)   echo "application/octet-stream" ;;
           esac
         }
@@ -96,10 +96,10 @@ runs:
         pushd ${{ github.workspace }}/${{ inputs.ARCHIVES_PATH }}
 
         # Traverse and upload
-        find "$SRC_DIR" -type f | while read -r file; do
-          rel_path="${file#$SRC_DIR/}"        # relative path
-          tmp_file="$(mktemp).gz"             # temp gzip file
-          gzip -c "$file" > "$tmp_file"       # compress
+        find . -type f | while read -r file; do
+          rel_path="${file#./}".         # relative path
+          tmp_file="$(mktemp).gz"        # temp gzip file
+          gzip -c "$file" > "$tmp_file"  # compress
 
           content_type=$(get_content_type "$file")
 
