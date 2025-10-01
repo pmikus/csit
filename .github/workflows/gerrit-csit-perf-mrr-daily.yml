@@ -74,6 +74,7 @@ jobs:
           gerrit-project: "csit"
           gerrit-url: ${{ vars.GERRIT_URL }}
           delay: "30s"
+          fetch-depth: 0
 
       - name: "Retrieve GIT commit message"
         uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
