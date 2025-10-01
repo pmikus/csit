@@ -54,7 +54,7 @@ jobs:
       - nomad
       - fdio:arch=${{ matrix.executor_arch }}
       - fdio:class=builder
-      - fdio:namespace=prod
+      - fdio:namespace=sandbox
       - fdio:os=${{ matrix.os }}
 
     strategy:
