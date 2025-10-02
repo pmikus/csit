@@ -18,6 +18,7 @@ jobs:
       - fdio:class=builder
       - fdio:namespace=sandbox
       - fdio:os=${{ matrix.os }}
+    timeout-minutes: 3600
 
     strategy:
       matrix:
