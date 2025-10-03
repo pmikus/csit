@@ -4,19 +4,18 @@ description: |
   This GitHub Action uploads logs to AWS S3.
 
 inputs:
-  #AWS_ACCESS_KEY_ID:
-  #  description: "Unique, public identifier for an AWS IAM user."
-  #  required: true
-  #  type: string
-  #AWS_SECRET_ACCESS_KEY:
-  #  description: "Long-term security credential for AWS account or an IAM user."
-  #  required: true
-  #  type: string
-  #AWS_REGION:
-  #  description: "Long-term security credential for AWS account or an IAM user."
-  #  required: true
-  #  default: "us-east-1"
-  #  type: string
+  AWS_ACCESS_KEY_ID:
+    description: "Unique, public identifier for an AWS IAM user."
+    required: true
+    type: string
+  AWS_SECRET_ACCESS_KEY:
+    description: "Long-term security credential for AWS account or an IAM user."
+    required: true
+    type: string
+  AWS_REGION:
+    description: "Long-term security credential for AWS account or an IAM user."
+    required: true
+    type: string
   S3_BUCKET:
     description: "Name of the Amazon S3 bucket."
     required: true
@@ -81,13 +80,12 @@ runs:
         sudo ./aws/install --update
         rm -rf ./aws
 
-    #- name: Configure AWS Credentials
-    #  uses: aws-actions/configure-aws-credentials@v5.0.0
-    #  with:
-    #    aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-    #    aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
-    #    aws-region: ${{ inputs.AWS_REGION }}
-
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v5.0.0
+      with:
+        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Upload archives directory content to S3
       shell: bash
@@ -133,7 +131,7 @@ runs:
           S3_ARN="${{ inputs.S3_BUCKET }}/${{ inputs.S3_PATH }}/${rel_path}.gz"
 
           echo "Uploading ${rel_path}.gz -> ${S3_ARN} (Content-Type: ${content_type}, gzip)"
-          #aws s3 cp "${tmp_file}" "${S3_ARN}" --content-type "${content_type}" --content-encoding "gzip"
+          aws s3 cp "${tmp_file}" "${S3_ARN}" --content-type "${content_type}" --content-encoding "gzip"
 
           rm -f "${tmp_file}"
         done
