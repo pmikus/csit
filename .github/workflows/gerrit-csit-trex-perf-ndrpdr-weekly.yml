@@ -1,0 +1,68 @@
+---
+name: csit-trex-perf-ndrpdr-weekly
+
+# yamllint disable-line rule:truthy
+on:
+  # Runs periodically
+  #schedule:
+  #  - cron:  "0 0 * * 6"
+  workflow_dispatch:
+
+jobs:
+  csit-trex-perf-ndrpdr-weekly:
+    name: csit-trex-perf-ndrpdr-weekly-master-${{ matrix.node }}
+    runs-on:
+      - self-hosted
+      - nomad
+      - fdio:arch=${{ matrix.executor_arch }}
+      - fdio:class=builder
+      - fdio:namespace=sandbox
+      - fdio:os=${{ matrix.os }}
+    timeout-minutes: 3600
+
+    strategy:
+      matrix:
+        include:
+          - node: 2n-icx
+            os: ubuntu2404
+            executor_arch: x86_64
+          - node: 2n-spr
+            os: ubuntu2404
+            executor_arch: x86_64
+
+    env:
+      JOB_NAME: "${{ github.job }}-master-${{ matrix.node }}"
+
+    steps:
+      - name: Gerrit Checkout
+        # yamllint disable-line rule:line-length
+        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+        with:
+          gerrit-refspec: refs/heads/master
+          gerrit-project: "csit"
+          gerrit-url: ${{ vars.GERRIT_URL }}
+          delay: "30s"
+          fetch-depth: 0
+
+      - name: Setup Environment
+        uses: fdio/csit/.github/actions/setup_executor_env@master
+
+      - name: Run Performance Bootstrap
+        env:
+          BRANCH_ID: oper
+          GERRIT_BRANCH: master
+        run: |
+          csit_entry_dir="./resources/libraries/bash/entry"
+          source ${csit_entry_dir}/with_oper_for_vpp.sh "bootstrap_verify_perf.sh"
+
+      - name: Archive Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.JOB_NAME }}-${{ github.run_number }}
+          path: archives/
+          if-no-files-found: "ignore"
+
+      - name: AWS S3 Publish Logs
+        if: always()
+        uses: fdio/csit/.github/actions/aws_s3_publish_logs@master

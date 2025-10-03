@@ -77,10 +77,6 @@ jobs:
           delay: "30s"
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
-      - name: "Retrieve GIT commit message"
-        # yamllint disable-line rule:line-length
-        uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
-
       - name: Setup Environment
         uses: fdio/csit/.github/actions/setup_executor_env@master
 
@@ -119,22 +115,10 @@ jobs:
           delay: "30s"
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
-      - name: "Retrieve GIT commit message"
-        # yamllint disable-line rule:line-length
-        uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
-
       - name: Setup Environment
-        uses: pmikus/csit/.github/actions/setup_executor_env@master
+        uses: fdio/csit/.github/actions/setup_executor_env@master
 
       - name: Run Terraform Bootstrap
         run: |
           csit_entry_dir="./resources/libraries/bash/entry"
           source ${csit_entry_dir}/bootstrap_aws_eb_version_deploy.sh
-
-      - name: Archive Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.JOB_NAME }}-${{ github.run_number }}
-          path: archives/
-          if-no-files-found: "ignore"
