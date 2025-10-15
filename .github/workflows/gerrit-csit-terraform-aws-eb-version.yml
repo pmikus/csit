@@ -78,7 +78,7 @@ jobs:
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
       - name: Setup Environment
-        uses: fdio/csit/.github/actions/setup_executor_env@main
+        uses: pmikus/.github/.github/actions/setup_executor_env@main
 
       - name: Run Terraform Bootstrap
         run: |
@@ -116,7 +116,7 @@ jobs:
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
       - name: Setup Environment
-        uses: fdio/.github/.github/.github/actions/setup_executor_env@main
+        uses: pmikus/.github/.github/actions/setup_executor_env@main
 
       - name: Run Terraform Bootstrap
         run: |
