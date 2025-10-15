@@ -116,7 +116,7 @@ jobs:
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
       - name: Setup Environment
-        uses: fdio/csit/.github/actions/setup_executor_env@master
+        uses: fdio/.github/.github/.github/actions/setup_executor_env@master
 
       - name: Run Terraform Bootstrap
         run: |
