@@ -44,70 +44,105 @@ on:
         required: true
         type: string
 
-env:
-  # yamllint disable-line rule:line-length
-  JOB_NAME: "csit-vpp-perf-report-${{ github.event.inputs.JOB_TYPE }}-${{ github.event.inputs.NODE_ARCH }}"
-  TESTBEDS: |
-    '{
-      "2n-aws": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "2n-c6in": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "2n-c7gn": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "aarch64"},
-      "2n-emr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "2n-grc": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "aarch64"},
-      "2n-icx": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "2n-spr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "2n-zn2": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "3n-alt": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "aarch64"},
-      "3n-emr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "3n-icx": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "3n-icxd": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "3n-oct": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "aarch64"},
-      "3n-snr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "3na-spr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
-      "3nb-spr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"}
-    }'
-  GERRIT_BRANCH: ${{ github.event.inputs.BRANCH }}
-  GERRIT_EVENT_COMMENT_TEXT: ${{ github.event.inputs.SUITE_GEN_PARAMS }}
-
 jobs:
   csit-vpp-perf-report:
-    name: ${{ github.env.JOB_NAME }}
+    # yamllint disable-line rule:line-length
+    name: csit-vpp-perf-report-${{ github.event.inputs.JOB_TYPE }}-${{ github.event.inputs.NODE_ARCH }}
+
+    strategy:
+      matrix:
+        include:
+          - node: 2n-aws
+            os: ubuntu2404
+            arch: x86_64
+          - node: 2n-c6in
+            os: ubuntu2404
+            arch: x86_64
+          - node: 2n-c7gn
+            os: ubuntu2404
+            arch: aarch64
+          - node: 2n-emr
+            os: ubuntu2404
+            arch: x86_64
+          - node: 2n-grc
+            os: ubuntu2404
+            arch: aarch64
+          - node: 2n-icx
+            os: ubuntu2404
+            arch: x86_64
+          - node: 2n-spr
+            os: ubuntu2404
+            arch: x86_64
+          - node: 2n-zn2
+            os: ubuntu2404
+            arch: x86_64
+          - node: 3n-alt
+            os: ubuntu2404
+            arch: aarch64
+          - node: 3n-emr
+            os: ubuntu2404
+            arch: x86_64
+          - node: 3n-icx
+            os: ubuntu2404
+            arch: x86_64
+          - node: 3n-icxd
+            os: ubuntu2404
+            arch: x86_64
+          - node: 3n-oct
+            os: ubuntu2404
+            arch: aarch64
+          - node: 3n-snr
+            os: ubuntu2404
+            arch: x86_64
+          - node: 3na-spr
+            os: ubuntu2404
+            arch: x86_64
+          - node: 3nb-spr
+            os: ubuntu2404
+            arch: x86_64
+
     runs-on:
       - self-hosted
       - nomad
-      # yamllint disable-line rule:line-length
-      - fdio:arch=${{ fromJSON(github.env.TESTBEDS)[github.event.inputs.NODE_ARCH].EXECUTOR_ARCH }}
+      - fdio:arch=${{ matrix.arch }}
       - fdio:class=builder
       - fdio:namespace=sandbox
+      - fdio:os=${{ matrix.os }}
+
+    env:
       # yamllint disable-line rule:line-length
-      - fdio:os=${{ fromJSON(github.env.TESTBEDS)[github.event.inputs.NODE_ARCH].OS }}
-    timeout-minutes: 3600
+      JOB_NAME: csit-vpp-perf-report-${{ github.event.inputs.JOB_TYPE }}-${{ matrix.node }}
+      GERRIT_BRANCH: ${{ github.event.inputs.BRANCH }}
+      GERRIT_EVENT_COMMENT_TEXT: ${{ github.event.inputs.SUITE_GEN_PARAMS }}
 
     steps:
       - name: Checkout CSIT repository with the change
+        if: ${{ github.event.inputs.NODE_ARCH == matrix.node }}
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.BRANCH }}
           fetch-depth: 0
 
       - name: Setup Environment
+        if: ${{ github.event.inputs.NODE_ARCH == matrix.node }}
         uses: pmikus/.github/.github/actions/setup_executor_env@main
 
       - name: Run Performance Bootstrap
+        if: ${{ github.event.inputs.NODE_ARCH == matrix.node }}
         run: |
           csit_entry_dir="./resources/libraries/bash/entry"
           source ${csit_entry_dir}/bootstrap_verify_perf.sh
 
       - name: Archive Logs
-        if: always()
+        if: ${{ always() && github.event.inputs.NODE_ARCH == matrix.node }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.JOB_NAME }}-${{ github.run_number }}
           path: archives/
-          if-no-files-found: "ignore"
+          if-no-files-found: ignore
 
       - name: AWS S3 Publish Logs
-        if: always()
+        if: ${{ always() && github.event.inputs.NODE_ARCH == matrix.node }}
         uses: pmikus/.github/.github/actions/aws_s3_publish_logs@main
         with:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
