@@ -64,14 +64,10 @@ jobs:
       JOB_NAME: "${{ github.job }}-master-${{ matrix.node }}"
 
     steps:
-      - name: Gerrit Checkout
-        # yamllint disable-line rule:line-length
-        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+      - name: Checkout CSIT repository with the change
+        uses: actions/checkout@v4
         with:
-          gerrit-refspec: refs/heads/master
-          gerrit-project: "csit"
-          gerrit-url: ${{ vars.GERRIT_URL }}
-          delay: "30s"
+          ref: master
           fetch-depth: 0
 
       - name: Setup Environment
