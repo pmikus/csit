@@ -48,7 +48,7 @@ env:
   # yamllint disable-line rule:line-length
   JOB_NAME: "csit-vpp-perf-report-${{ github.event.inputs.JOB_TYPE }}-${{ github.event.inputs.NODE_ARCH }}"
   TESTBEDS: |
-    {
+    '{
       "2n-aws": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
       "2n-c6in": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
       "2n-c7gn": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "aarch64"},
@@ -65,7 +65,7 @@ env:
       "3n-snr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
       "3na-spr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
       "3nb-spr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"}
-    }
+    }'
   GERRIT_BRANCH: ${{ github.event.inputs.BRANCH }}
   GERRIT_EVENT_COMMENT_TEXT: ${{ github.event.inputs.SUITE_GEN_PARAMS }}
 
