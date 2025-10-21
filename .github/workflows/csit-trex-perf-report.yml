@@ -34,10 +34,10 @@ env:
   # yamllint disable-line rule:line-length
   JOB_NAME: "csit-trex-perf-report-${{ github.event.inputs.JOB_TYPE }}-${{ github.event.inputs.NODE_ARCH }}"
   TESTBEDS: |
-    {
+    '{
       "2n-icx": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"},
       "2n-spr": {"OS": "ubuntu2404", "EXECUTOR_ARCH": "x86_64"}
-    }
+    }'
   GERRIT_BRANCH: ${{ github.event.inputs.BRANCH }}
   GERRIT_EVENT_COMMENT_TEXT: ${{ github.event.inputs.SUITE_GEN_PARAMS }}
 
