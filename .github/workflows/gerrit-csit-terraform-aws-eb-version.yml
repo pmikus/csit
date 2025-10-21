@@ -4,43 +4,6 @@ name: csit-terraform-aws-eb-version
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
-    inputs:
-      GERRIT_BRANCH:
-        description: "Branch that change is against"
-        required: true
-        type: string
-      GERRIT_CHANGE_ID:
-        description: "The ID for the change"
-        required: true
-        type: string
-      GERRIT_CHANGE_NUMBER:
-        description: "The Gerrit number"
-        required: true
-        type: string
-      GERRIT_CHANGE_URL:
-        description: "URL to the change"
-        required: true
-        type: string
-      GERRIT_EVENT_TYPE:
-        description: "Type of Gerrit event"
-        required: true
-        type: string
-      GERRIT_PATCHSET_NUMBER:
-        description: "The patch number for the change"
-        required: true
-        type: string
-      GERRIT_PATCHSET_REVISION:
-        description: "The revision sha"
-        required: true
-        type: string
-      GERRIT_PROJECT:
-        description: "Project in Gerrit"
-        required: true
-        type: string
-      GERRIT_REFSPEC:
-        description: "Gerrit refspec of change"
-        required: true
-        type: string
 
 concurrency:
   # yamllint disable-line rule:line-length
@@ -52,30 +15,21 @@ jobs:
     runs-on:
       - self-hosted
       - nomad
-      - fdio:arch=${{ matrix.executor_arch }}
+      - fdio:arch=x86_64
       - fdio:class=builder
       - fdio:namespace=sandbox
-      - fdio:os=${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu2404]
-        executor_arch: [x86_64]
+      - fdio:os=ubuntu2404
 
     env:
-      JOB_NAME: "csit-terraform-aws-eb-version-verify"
-      BUILD_ID: "${{ github.run_number }}"
+      JOB_NAME: csit-terraform-aws-eb-version-verify
+      BUILD_ID: ${{ github.run_number }}
 
     steps:
-      - name: Gerrit Checkout
-        # yamllint disable-line rule:line-length
-        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+      - name: Checkout CSIT repository with the change
+        uses: actions/checkout@v4
         with:
-          gerrit-refspec: ${{ github.event.inputs.GERRIT_REFSPEC }}
-          gerrit-project: ${{ github.event.inputs.GERRIT_PROJECT }}
-          gerrit-url: ${{ vars.GERRIT_URL }}
-          delay: "30s"
-          ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
+          ref: master
+          fetch-depth: 0
 
       - name: Setup Environment
         uses: pmikus/.github/.github/actions/setup_executor_env@main
@@ -90,30 +44,21 @@ jobs:
     runs-on:
       - self-hosted
       - nomad
-      - fdio:arch=${{ matrix.executor_arch }}
+      - fdio:arch=x86_64
       - fdio:class=builder
       - fdio:namespace=sandbox
-      - fdio:os=${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu2404]
-        executor_arch: [x86_64]
+      - fdio:os=ubuntu2404
 
     env:
-      JOB_NAME: "csit-terraform-aws-eb-version-deploy"
-      BUILD_ID: "${{ github.run_number }}"
+      JOB_NAME: csit-terraform-aws-eb-version-deploy
+      BUILD_ID: ${{ github.run_number }}
 
     steps:
-      - name: Gerrit Checkout
-        # yamllint disable-line rule:line-length
-        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63 # v0.9
+      - name: Checkout CSIT repository with the change
+        uses: actions/checkout@v4
         with:
-          gerrit-refspec: ${{ github.event.inputs.GERRIT_REFSPEC }}
-          gerrit-project: ${{ github.event.inputs.GERRIT_PROJECT }}
-          gerrit-url: ${{ vars.GERRIT_URL }}
-          delay: "30s"
-          ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
+          ref: master
+          fetch-depth: 0
 
       - name: Setup Environment
         uses: pmikus/.github/.github/actions/setup_executor_env@main

@@ -1,16 +1,16 @@
 ---
-name: csit-dpdk-perf-mrr-weekly
+name: csit-vpp-perf-mrr-daily
 
 # yamllint disable-line rule:truthy
 on:
   # Runs periodically
   #schedule:
-  #  - cron:  "0 0 * * 6"
+  #  - cron:  "30 22 * * 0-4"
   workflow_dispatch:
 
 jobs:
-  csit-dpdk-perf-mrr-weekly:
-    name: csit-dpdk-perf-mrr-weekly-master-${{ matrix.node }}
+  csit-vpp-perf-mrr-daily:
+    name: csit-vpp-perf-mrr-daily-master-${{ matrix.node }}
     runs-on:
       - self-hosted
       - nomad
@@ -59,9 +59,12 @@ jobs:
           - node: 3n-emr
             os: ubuntu2404
             executor_arch: x86_64
+          - node: 3n-oct
+            os: ubuntu2404
+            executor_arch: aarch64
 
     env:
-      JOB_NAME: "${{ github.job }}-master-${{ matrix.node }}"
+      JOB_NAME: ${{ github.job }}-master-${{ matrix.node }}
 
     steps:
       - name: Checkout CSIT repository with the change
@@ -71,7 +74,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Environment
-        uses: pmikus/.github/.github/actions/setup_executor_env@master
+        uses: pmikus/.github/.github/actions/setup_executor_env@main
 
       - name: Run Performance Bootstrap
         env:
@@ -87,11 +90,11 @@ jobs:
         with:
           name: ${{ env.JOB_NAME }}-${{ github.run_number }}
           path: archives/
-          if-no-files-found: "ignore"
+          if-no-files-found: ignore
 
       - name: AWS S3 Publish Logs
         if: always()
-        uses: pmikus/.github/.github/actions/aws_s3_publish_logs@master
+        uses: pmikus/.github/.github/actions/aws_s3_publish_logs@main
         with:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

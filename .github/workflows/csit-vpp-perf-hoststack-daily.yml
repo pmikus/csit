@@ -1,16 +1,16 @@
 ---
-name: csit-vpp-perf-ndrpdr-weekly
+name: csit-vpp-perf-hoststack-daily
 
 # yamllint disable-line rule:truthy
 on:
   # Runs periodically
   #schedule:
-  #  - cron:  "0 0 * * 6"
+  #  - cron:  "30 22 * * 0-4"
   workflow_dispatch:
 
 jobs:
-  csit-vpp-perf-ndrpdr-weekly:
-    name: csit-vpp-perf-ndrpdr-weekly-master-${{ matrix.node }}
+  csit-vpp-perf-hoststack-daily:
+    name: csit-vpp-perf-hoststack-daily-master-${{ matrix.node }}
     runs-on:
       - self-hosted
       - nomad
@@ -32,19 +32,7 @@ jobs:
           - node: 2n-spr
             os: ubuntu2404
             executor_arch: x86_64
-          - node: 2n-zn2
-            os: ubuntu2404
-            executor_arch: x86_64
           - node: 3n-icx
-            os: ubuntu2404
-            executor_arch: x86_64
-          - node: 3n-alt
-            os: ubuntu2404
-            executor_arch: aarch64
-          - node: 3n-snr
-            os: ubuntu2404
-            executor_arch: x86_64
-          - node: 3n-icxd
             os: ubuntu2404
             executor_arch: x86_64
           - node: 3na-spr
@@ -59,12 +47,9 @@ jobs:
           - node: 3n-emr
             os: ubuntu2404
             executor_arch: x86_64
-          - node: 3n-oct
-            os: ubuntu2404
-            executor_arch: aarch64
 
     env:
-      JOB_NAME: "${{ github.job }}-master-${{ matrix.node }}"
+      JOB_NAME: ${{ github.job }}-master-${{ matrix.node }}
 
     steps:
       - name: Checkout CSIT repository with the change
@@ -90,7 +75,7 @@ jobs:
         with:
           name: ${{ env.JOB_NAME }}-${{ github.run_number }}
           path: archives/
-          if-no-files-found: "ignore"
+          if-no-files-found: ignore
 
       - name: AWS S3 Publish Logs
         if: always()

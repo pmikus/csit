@@ -49,7 +49,7 @@ concurrency:
 
 jobs:
   csit-verify-tox:
-    name: "csit-verify-tox"
+    name: csit-verify-tox
     runs-on:
       - self-hosted
       - nomad
@@ -64,7 +64,7 @@ jobs:
         executor_arch: [x86_64]
 
     env:
-      JOB_NAME: "${{ github.job }}"
+      JOB_NAME: ${{ github.job }}
 
     steps:
       - name: Gerrit Checkout
@@ -94,7 +94,7 @@ jobs:
         with:
           name: ${{ env.JOB_NAME }}-${{ github.run_number }}
           path: archives/
-          if-no-files-found: "ignore"
+          if-no-files-found: ignore
 
       - name: AWS S3 Publish Logs
         if: always()
