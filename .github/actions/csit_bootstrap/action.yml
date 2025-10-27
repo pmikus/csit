@@ -1,0 +1,32 @@
+---
+name: "🛠️ CSIT Bootstrap"
+description: |
+  This GitHub Action runs CSIT bootstrap.
+
+inputs:
+  BOOTSTRAP_SCRIPT:
+    description: "CSIT bootstrap script to source."
+    required: true
+    type: string
+  WITH_OPER:
+    description: "Use oper branch to checkout the code."
+    required: false
+    type: boolean
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Bootstrap
+      id: bootstrap
+      shell: bash
+      env:
+        BRANCH_ID: oper
+        GERRIT_BRANCH: master
+      run: |
+        csit_entry_dir="./resources/libraries/bash/entry"
+        if [[ "${{ inputs.WITH_OPER }}" == "true" ]]; then
+            source ${csit_entry_dir}/with_oper_for_vpp.sh "${{ inputs.BOOTSTRAP_SCRIPT }}"
+        else
+            source ${csit_entry_dir}/${{ inputs.BOOTSTRAP_SCRIPT }}
+        fi
