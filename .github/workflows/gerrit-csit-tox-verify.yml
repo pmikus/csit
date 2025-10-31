@@ -77,10 +77,6 @@ jobs:
           delay: "30s"
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
-      - name: Retrieve GIT commit message
-        # yamllint disable-line rule:line-length
-        uses: lfit/releng-reusable-workflows/.github/actions/git-commit-message-action@main
-
       - name: Setup Environment
         uses: pmikus/.github/.github/actions/setup_executor_env@main
 

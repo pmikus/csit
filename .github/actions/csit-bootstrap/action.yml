@@ -1,15 +1,15 @@
 ---
 name: "🛠️ CSIT Bootstrap"
 description: |
-  This GitHub Action runs CSIT bootstrap.
+  This GitHub Action runs FD.io CSIT bootstrap.
 
 inputs:
   BOOTSTRAP_SCRIPT:
-    description: "CSIT bootstrap script to source."
+    description: "CSIT bootstrap shell script to source."
     required: true
     type: string
   WITH_OPER:
-    description: "Use oper branch to checkout the code."
+    description: "Use operational branch to checkout the code."
     required: false
     type: boolean
     default: "false"
