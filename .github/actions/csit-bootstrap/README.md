@@ -9,7 +9,7 @@ An example workflow step using this action:
 <!-- markdownlint-disable MD013 -->
 ```yaml
 - name: CSIT Bootstrap
-  uses: fdio/csit/.github/actions/csit_bootstrap@master
+  uses: fdio/csit/.github/actions/csit-bootstrap@master
 ```
 <!-- markdownlint-enable MD013 -->
 
