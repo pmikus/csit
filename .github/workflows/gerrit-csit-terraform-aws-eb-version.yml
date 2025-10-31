@@ -34,10 +34,11 @@ jobs:
       - name: Setup Environment
         uses: pmikus/.github/.github/actions/setup_executor_env@main
 
-      - name: Run Terraform Bootstrap
-        run: |
-          csit_entry_dir="./resources/libraries/bash/entry"
-          source ${csit_entry_dir}/bootstrap_aws_eb_version_verify.sh
+      - name: Run Performance Bootstrap
+        uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
+        with:
+          BOOTSTRAP_SCRIPT: bootstrap_aws_eb_version_deploy.sh
+          WITH_OPER: false
 
   deploy:
     needs: verify
@@ -63,7 +64,8 @@ jobs:
       - name: Setup Environment
         uses: pmikus/.github/.github/actions/setup_executor_env@main
 
-      - name: Run Terraform Bootstrap
-        run: |
-          csit_entry_dir="./resources/libraries/bash/entry"
-          source ${csit_entry_dir}/bootstrap_aws_eb_version_deploy.sh
+      - name: Run Performance Bootstrap
+        uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
+        with:
+          BOOTSTRAP_SCRIPT: bootstrap_aws_eb_version_deploy.sh
+          WITH_OPER: false

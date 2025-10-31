@@ -62,12 +62,10 @@ jobs:
         uses: pmikus/.github/.github/actions/setup_executor_env@main
 
       - name: Run Performance Bootstrap
-        env:
-          BRANCH_ID: oper
-          GERRIT_BRANCH: master
-        run: |
-          csit_entry_dir="./resources/libraries/bash/entry"
-          source ${csit_entry_dir}/with_oper_for_vpp.sh "bootstrap_verify_perf.sh"
+        uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
+        with:
+          BOOTSTRAP_SCRIPT: bootstrap_verify_perf.sh
+          WITH_OPER: true
 
       - name: Archive Logs
         if: always()
@@ -79,7 +77,7 @@ jobs:
 
       - name: AWS S3 Publish Logs
         if: always()
-        uses: pmikus/.github/.github/actions/aws_s3_publish_logs@main
+        uses: pmikus/.github/.github/actions/aws-s3-publish-logs@cfcf2a99d1936ac871865b8b9c67d488460662c1
         with:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
