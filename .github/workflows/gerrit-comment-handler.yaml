@@ -88,7 +88,7 @@ jobs:
         uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
       - name: Run Performance Bootstrap
-        uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
+        uses: pmikus/csit/.github/actions/csit-bootstrap@e29d99cde5a57e52dac8a07658960f4a95570861
         with:
           bootstrap_script: tox.sh
           with_oper: false

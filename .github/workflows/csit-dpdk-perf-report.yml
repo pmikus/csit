@@ -117,9 +117,10 @@ jobs:
 
       - name: Run Performance Bootstrap
         if: ${{ github.event.inputs.NODE_ARCH == matrix.node }}
-        run: |
-          csit_entry_dir="./resources/libraries/bash/entry"
-          source ${csit_entry_dir}/bootstrap_verify_perf.sh
+        uses: pmikus/csit/.github/actions/csit-bootstrap@e29d99cde5a57e52dac8a07658960f4a95570861
+        with:
+          bootstrap_script: bootstrap_verify_perf.sh
+          with_oper: false
 
       - name: Archive Logs
         if: ${{ always() && github.event.inputs.NODE_ARCH == matrix.node }}
