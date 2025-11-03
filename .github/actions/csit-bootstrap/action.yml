@@ -4,11 +4,11 @@ description: |
   This GitHub Action runs FD.io CSIT bootstrap.
 
 inputs:
-  BOOTSTRAP_SCRIPT:
+  bootstrap_script:
     description: "CSIT bootstrap shell script to source."
     required: true
     type: string
-  WITH_OPER:
+  with_oper:
     description: "Use operational branch to checkout the code."
     required: false
     type: boolean
@@ -25,8 +25,8 @@ runs:
         GERRIT_BRANCH: master
       run: |
         csit_entry_dir="./resources/libraries/bash/entry"
-        if [[ "${{ inputs.WITH_OPER }}" == "true" ]]; then
-            source ${csit_entry_dir}/with_oper_for_vpp.sh "${{ inputs.BOOTSTRAP_SCRIPT }}"
+        if [[ "${{ inputs.with_oper }}" == "true" ]]; then
+            source ${csit_entry_dir}/with_oper_for_vpp.sh "${{ inputs.bootstrap_script }}"
         else
-            source ${csit_entry_dir}/${{ inputs.BOOTSTRAP_SCRIPT }}
+            source ${csit_entry_dir}/${{ inputs.bootstrap_script }}
         fi

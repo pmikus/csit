@@ -32,13 +32,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Environment
-        uses: pmikus/.github/.github/actions/setup_executor_env@main
+        uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
       - name: Run Performance Bootstrap
         uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
         with:
-          BOOTSTRAP_SCRIPT: bootstrap_aws_eb_version_deploy.sh
-          WITH_OPER: false
+          bootstrap_script: bootstrap_aws_eb_version_deploy.sh
+          with_oper: false
 
   deploy:
     needs: verify
@@ -62,10 +62,10 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Environment
-        uses: pmikus/.github/.github/actions/setup_executor_env@main
+        uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
       - name: Run Performance Bootstrap
         uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
         with:
-          BOOTSTRAP_SCRIPT: bootstrap_aws_eb_version_deploy.sh
-          WITH_OPER: false
+          bootstrap_script: bootstrap_aws_eb_version_deploy.sh
+          with_oper: false

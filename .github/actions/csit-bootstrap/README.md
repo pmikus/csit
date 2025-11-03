@@ -19,8 +19,8 @@ An example workflow step using this action:
 
 | Variable Name    | Description                            |
 | ---------------- | -------------------------------------- |
-| BOOTSTRAP_SCRIPT | CSIT bootstrap script to source.       |
-| WITH_OPER        | Use oper branch to checkout the code.  |
+| bootstrap_script | CSIT bootstrap script to source.       |
+| with_oper        | Use oper branch to checkout the code.  |
 
 <!-- markdownlint-enable MD013 -->
 

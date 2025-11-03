@@ -1,5 +1,5 @@
 ---
-name: csit-verify-tox
+name: csit-verify
 
 # yamllint disable-line rule:truthy
 on:
@@ -41,10 +41,17 @@ on:
         description: "Gerrit refspec of change"
         required: true
         type: string
+      GERRIT_COMMENT:
+        description: "Full command line from Gerrit comment"
+        required: true
+        type: string
+
+permissions:
+  contents: read
 
 concurrency:
   # yamllint disable-line rule:line-length
-  group: csit-verify-tox-${{ github.workflow }}-${{ github.event.inputs.GERRIT_BRANCH }}-${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
+  group: ${{ github.workflow }}-${{ inputs.GERRIT_CHANGE_NUMBER }}
   cancel-in-progress: true
 
 jobs:
@@ -78,13 +85,13 @@ jobs:
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
       - name: Setup Environment
-        uses: pmikus/.github/.github/actions/setup_executor_env@main
+        uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
       - name: Run Performance Bootstrap
         uses: pmikus/csit/.github/actions/csit-bootstrap@c7102618197f7006f62e7ff89cc7b1e08ce4940b
         with:
-          BOOTSTRAP_SCRIPT: tox.sh
-          WITH_OPER: false
+          bootstrap_script: tox.sh
+          with_oper: false
 
       - name: Archive Logs
         if: always()
@@ -96,9 +103,9 @@ jobs:
 
       - name: AWS S3 Publish Logs
         if: always()
-        uses: pmikus/.github/.github/actions/aws-s3-publish-logs@cfcf2a99d1936ac871865b8b9c67d488460662c1
+        uses: pmikus/.github/.github/actions/aws-s3-publish-logs@8930b575136625c5c8a47752192f9cd90202bea3
         with:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ vars.AWS_REGION }}
+          s3_bucket: ${{ vars.S3_BUCKET }}
