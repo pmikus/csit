@@ -1,0 +1,114 @@
+---
+name: csit-report-dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_type:
+        description: "The type of job: iterative or coverage."
+        required: true
+        type: choice
+        options:
+          - iterative
+          - coverage
+        default: iterative
+      node:
+        description: Performance testbed node.
+        required: true
+        type: choice
+        options:
+          - 2n-emr
+          - 2n-grc
+          - 2n-icx
+          - 2n-spr
+          - 2n-zn2
+          - 3n-alt
+          - 3n-emr
+          - 3n-icx
+          - 3n-icxd
+          - 3n-oct
+          - 3n-snr
+          - 3na-spr
+          - 3nb-spr
+        default: 2n-emr
+      branch:
+        description: Branch or patch.
+        required: true
+        type: string
+        default: rls2510
+      suite_gen_params:
+        description: Parameters for the suite generator.
+        required: true
+        type: string
+env:
+  node_arch: '{"node": "APPLE", "arch": "BLUE"}'
+
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          case "${{ inputs.node }}" in
+            "2n-emr")
+                echo "matrix={\"include\":[{\"node\":\"2n-emr\",\"arch\":\"x86_64\",\"os\":\"ubuntu2404\"}]}" >> $GITHUB_OUTPUT
+            ;;
+          esac
+
+  csit-dpdk-perf-report:
+    needs: dispatch
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
+    steps:
+      - run: echo "Matrix - Project ${{ matrix.project }}, "
+
+  #dispatch:
+  #  uses: .github/workflows/csit-report-dpdk.yml@master
+  #  strategy:
+  #    matrix:
+  #      include:
+  #        - node: 2n-grc
+  #          os: ubuntu2404
+  #          executor_arch: aarch64
+  #        - node: 2n-icx
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 2n-spr
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 2n-zn2
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 3n-icx
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 3n-alt
+  #          os: ubuntu2404
+  #          executor_arch: aarch64
+  #        - node: 3n-snr
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 3n-icxd
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 3na-spr
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 3nb-spr
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 2n-emr
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #        - node: 3n-emr
+  #          os: ubuntu2404
+  #          executor_arch: x86_64
+  #  with:
+  #    job_type: ${{ inputs.job_type }}
+  #    node: ${{  }}
+  #    branch: ${{ inputs.branch }}
+  #    suite_gen_params: ${{ inputs.suite_gen_params }}

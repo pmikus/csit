@@ -1,5 +1,5 @@
 ---
-name: comment-handler
+name: csit-verify-tox
 
 # yamllint disable-line rule:truthy
 on:
@@ -41,10 +41,6 @@ on:
         description: "Gerrit refspec of change"
         required: true
         type: string
-      GERRIT_COMMENT:
-        description: "Full command line from Gerrit comment"
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -84,46 +80,14 @@ jobs:
           delay: "30s"
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
-      - name: Display workflow inputs
-        run: |
-          echo "Project: ${{ inputs.GERRIT_PROJECT }}"
-          echo "Branch: ${{ inputs.GERRIT_BRANCH }}"
-          echo "Change: ${{ inputs.GERRIT_CHANGE_NUMBER }}"
-          echo "Patchset: ${{ inputs.GERRIT_PATCHSET_NUMBER }}"
-          echo "Refspec: ${{ inputs.GERRIT_REFSPEC }}"
-          echo "Comment: ${{ inputs.GERRIT_COMMENT }}"
-
       - name: Setup Environment
         uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
-      - name: Parse command from comment
-        id: parse
-        run: |
-          # Extract action and command name
-          # Pattern: gha-run <command> [params...]
-          ACTION=$(echo "$COMMENT" | awk '{print $1}' | sed 's/gha-//')
-          WORKFLOW=$(echo "$COMMENT" | awk '{print $2}')
-          PARAMS=$(echo "$COMMENT" | cut -d' ' -f3-)
-          {
-            echo "action=$ACTION"
-            echo "workflow=$WORKFLOW"
-            echo "params=$PARAMS"
-          } >> "$GITHUB_OUTPUT"
-          echo "Action: $ACTION"
-          echo "Workflow: $WORKFLOW"
-          echo "Parameters: $PARAMS"
-
-      - name: Run CSIT Bootstrap
-        if: contains(steps.parse.outputs.workflow, 'tox')
+      - name: Run Performance Bootstrap
         uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
         with:
           bootstrap_script: tox.sh
-
-      - name: Run CSIT Bootstrap
-        if: contains(steps.parse.outputs.workflow, 'perf')
-        uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
-        with:
-          bootstrap_script: bootstrap_verify_perf.sh
+          with_oper: false
 
       - name: Archive Logs
         if: always()

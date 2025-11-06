@@ -45,50 +45,6 @@ jobs:
   csit-dpdk-perf-report:
     # yamllint disable-line rule:line-length
     name: csit-dpdk-perf-report-${{ github.event.inputs.JOB_TYPE }}-${{ github.event.inputs.NODE_ARCH }}
-
-    strategy:
-      matrix:
-        include:
-          - node: 2n-emr
-            os: ubuntu2404
-            arch: x86_64
-          - node: 2n-grc
-            os: ubuntu2404
-            arch: aarch64
-          - node: 2n-icx
-            os: ubuntu2404
-            arch: x86_64
-          - node: 2n-spr
-            os: ubuntu2404
-            arch: x86_64
-          - node: 2n-zn2
-            os: ubuntu2404
-            arch: x86_64
-          - node: 3n-alt
-            os: ubuntu2404
-            arch: aarch64
-          - node: 3n-emr
-            os: ubuntu2404
-            arch: x86_64
-          - node: 3n-icx
-            os: ubuntu2404
-            arch: x86_64
-          - node: 3n-icxd
-            os: ubuntu2404
-            arch: x86_64
-          - node: 3n-oct
-            os: ubuntu2404
-            arch: aarch64
-          - node: 3n-snr
-            os: ubuntu2404
-            arch: x86_64
-          - node: 3na-spr
-            os: ubuntu2404
-            arch: x86_64
-          - node: 3nb-spr
-            os: ubuntu2404
-            arch: x86_64
-
     runs-on:
       - self-hosted
       - nomad
@@ -96,6 +52,11 @@ jobs:
       - fdio:class=builder
       - fdio:namespace=sandbox
       - fdio:os=${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu2404]
+        executor_arch: [x86_64]
 
     env:
       # yamllint disable-line rule:line-length
@@ -106,7 +67,7 @@ jobs:
     steps:
       - name: Checkout CSIT repository with the change
         if: ${{ github.event.inputs.NODE_ARCH == matrix.node }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.inputs.BRANCH }}
           fetch-depth: 0
