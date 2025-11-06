@@ -40,9 +40,6 @@ on:
         description: Parameters for the suite generator.
         required: true
         type: string
-env:
-  node_arch: '{"node": "APPLE", "arch": "BLUE"}'
-
 
 jobs:
   dispatch:
@@ -64,7 +61,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
     steps:
-      - run: echo "Matrix - Project ${{ matrix.project }}, "
+      - run: echo "Matrix - Project ${{ matrix.inlcude }}, "
 
   #dispatch:
   #  uses: .github/workflows/csit-report-dpdk.yml@master
