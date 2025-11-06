@@ -62,15 +62,101 @@ jobs:
           case "${{ inputs.node }}" in
             "2n-emr")
                 if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
                     exit 1
                 fi
-                node=${{ inputs.node }}
                 executor_arch="x86_64"
                 os="ubuntu2404"
-                dut=${{ inputs.dut }}
+            ;;
+            "2n-grc")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "2n-icx")
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "2n-spr")
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "2n-zn2")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3n-alt")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3n-emr")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3n-icx")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3n-icxd")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3n-oct")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3n-snr")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3na-spr")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
+            ;;
+            "3nb-spr")
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    echo "Unsupported combination" >&2
+                    exit 1
+                fi
+                executor_arch="x86_64"
+                os="ubuntu2404"
             ;;
           esac
-          echo "matrix={\"include\":[{\"node\":\"$node\",\"executor_arch\":\"$executor_arch\",\"os\":\"$os\",\"dut\":\"$dut\",}]}" >> $GITHUB_OUTPUT
+          echo "matrix={\"include\":[{\"node\":\"${{ inputs.node }}\",\"executor_arch\":\"$executor_arch\",\"os\":\"$os\",\"dut\":\"${{ inputs.dut }}\",}]}" >> $GITHUB_OUTPUT
 
   csit-perf-report:
     needs: dispatch
