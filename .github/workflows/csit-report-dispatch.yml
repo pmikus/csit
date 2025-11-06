@@ -13,6 +13,15 @@ on:
           - iterative
           - coverage
         default: iterative
+      dut:
+        description: "CSIT test/ subdirectory containing suites to execute."
+        required: true
+        type: choice
+        options:
+          - dpdk
+          - trex
+          - vpp
+        default: vpp
       node:
         description: Performance testbed node.
         required: true
@@ -50,17 +59,23 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          set -ex
           case "${{ inputs.node }}" in
             "2n-emr")
-                echo "matrix={\"include\":[{\"node\":\"2n-emr\",\"executor_arch\":\"x86_64\",\"os\":\"ubuntu2404\"}]}" >> $GITHUB_OUTPUT
+                if [ ${{ inputs.dut }} == "trex" ]; then
+                    exit 1
+                fi
+                node=${{ inputs.node }}
+                executor_arch="x86_64"
+                os="ubuntu2404"
+                dut=${{ inputs.dut }}
             ;;
           esac
+          echo "matrix={\"include\":[{\"node\":\"$node\",\"executor_arch\":\"$executor_arch\",\"os\":\"$os\",\"dut\":\"$dut\",}]}" >> $GITHUB_OUTPUT
 
   csit-perf-report:
     needs: dispatch
     # yamllint disable-line rule:line-length
-    name: csit-dpdk-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
+    name: csit-${{ github.event.inputs.dut }}-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
     runs-on:
       - self-hosted
       - nomad
@@ -74,7 +89,8 @@ jobs:
       matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
 
     env:
-      JOB_NAME: csit-dpdk-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
+      # yamllint disable-line rule:line-length
+      JOB_NAME: csit-${{ github.event.inputs.dut }}-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
       GERRIT_BRANCH: ${{ github.event.inputs.branch }}
 
     steps:
