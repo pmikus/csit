@@ -61,7 +61,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
     steps:
-      - run: echo "Matrix - Project ${{ matrix.include }}, "
+      - run: echo "Matrix - Project ${{ matrix }}, "
 
   #dispatch:
   #  uses: .github/workflows/csit-report-dpdk.yml@master
