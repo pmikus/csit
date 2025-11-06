@@ -74,7 +74,7 @@ jobs:
       matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
 
     env:
-      JOB_NAME: ${{ github.job }}
+      JOB_NAME: csit-dpdk-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
       GERRIT_BRANCH: ${{ github.event.inputs.branch }}
 
     steps:
