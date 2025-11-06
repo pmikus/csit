@@ -49,6 +49,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
+          set -exou pipeline
           case "${{ inputs.node }}" in
             "2n-emr")
                 echo "matrix={\"include\":[{\"node\":\"2n-emr\",\"arch\":\"x86_64\",\"os\":\"ubuntu2404\"}]}" >> $GITHUB_OUTPUT
@@ -61,7 +62,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
     steps:
-      - run: echo "Matrix - Project ${{ matrix }}, "
+      - run: echo "Matrix - Project ${{ matrix }}"
 
   #dispatch:
   #  uses: .github/workflows/csit-report-dpdk.yml@master
