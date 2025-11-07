@@ -141,8 +141,12 @@ jobs:
                 ;;
           esac
 
-          if [ ${{ inputs.dut }} == "trex" && ${trex:-false} == "false"]; then
+          if [[ ${{ inputs.dut }} == "trex" && ${trex:-false} == "false" ]]; then
               echo "::error::Unsupported Trex/Node combination!"
+              exit 1
+          fi
+          if [[ ${{ inputs.dut }} == "dpdk" && ${dpdk:-false} == "false" ]]; then
+              echo "::error::Unsupported DPDK/Node combination!"
               exit 1
           fi
           echo "matrix={\"include\":[{\"node\":\"${{ inputs.node }}\",\"executor_arch\":\"$executor_arch\",\"os\":\"$os\",\"dut\":\"${{ inputs.dut }}\",}]}" >> $GITHUB_OUTPUT
