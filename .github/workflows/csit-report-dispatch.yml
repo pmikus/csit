@@ -141,7 +141,7 @@ jobs:
                 ;;
           esac
 
-          if [ ${{ inputs.dut }} == "trex" && -z ${trex+x} ]; then
+          if [ ${{ inputs.dut }} == "trex" && ${trex:-false} == "false"]; then
               echo "::error::Unsupported Trex/Node combination!"
               exit 1
           fi
