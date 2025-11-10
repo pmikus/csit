@@ -73,7 +73,7 @@ jobs:
   csit-perf-report:
     needs: dispatch
     # yamllint disable-line rule:line-length
-    name: csit-${{ github.event.inputs.dut }}-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
+    name: csit-${{ github.event.inputs.dut }}-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch == 'rls2510' && '2510' || github.event.inputs.branch == 'master' && 'master' }}-${{ matrix.node }}
     runs-on:
       - self-hosted
       - nomad
@@ -88,7 +88,7 @@ jobs:
 
     env:
       # yamllint disable-line rule:line-length
-      JOB_NAME: csit-${{ github.event.inputs.dut }}-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch }}-${{ matrix.node }}
+      JOB_NAME: csit-${{ github.event.inputs.dut }}-perf-report-${{ github.event.inputs.job_type }}-${{ github.event.inputs.branch == 'rls2510' && '2510' || github.event.inputs.branch == 'master' && 'master' }}-${{ matrix.node }}
       GERRIT_BRANCH: ${{ github.event.inputs.branch }}
 
     steps:

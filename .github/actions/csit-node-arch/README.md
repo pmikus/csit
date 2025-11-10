@@ -1,6 +1,7 @@
-# 🛠️ CSIT Bootstrap
+# 🛠️ CSIT Node/Arch Matrix
 
-Runs CSIT bootstrap script of choice. Optionally runs on top of oper branch.
+Generates a GitHub Actions matrix for environments based on the selected node
+configuration and DUT type.
 
 ## Usage Example
 
@@ -8,8 +9,8 @@ An example workflow step using this action:
 
 <!-- markdownlint-disable MD013 -->
 ```yaml
-- name: CSIT Bootstrap
-  uses: fdio/csit/.github/actions/csit-bootstrap@master
+- name: Prepare node selection matrix
+  uses: fdio/csit/.github/actions/csit-node-arch@master
 ```
 <!-- markdownlint-enable MD013 -->
 
@@ -17,13 +18,23 @@ An example workflow step using this action:
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name    | Description                            |
-| ---------------- | -------------------------------------- |
-| bootstrap_script | CSIT bootstrap script to source.       |
-| with_oper        | Use oper branch to checkout the code.  |
+| Variable Name | Description                                                  |
+| ------------- | ------------------------------------------------------------ |
+| node          | CSIT bootstrap node identifier (e.g., 2n-icx, 3n-snr, etc.). |
+| dut           | Target DUT type (e.g., vpp, dpdk, trex).                     |
+
+<!-- markdownlint-enable MD013 -->
+
+## Outputs
+
+<!-- markdownlint-disable MD013 -->
+
+| Variable Name | Description                                                  |
+| ------------- | ------------------------------------------------------------ |
+| output        | JSON matrix object for GitHub Actions workflow.              |
 
 <!-- markdownlint-enable MD013 -->
 
 ## Requirements/Dependencies
 
-CSIT repository needs to be checkout.
+Jq binary required to be installed on executor image.
