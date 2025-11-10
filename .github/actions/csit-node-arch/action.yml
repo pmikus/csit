@@ -39,14 +39,17 @@ runs:
             dpdk="true"
             executor_arch="x86_64"
             ;;
-          2n-grc|3n-alt|3n-oct)
-            dpdk="true"
-            executor_arch="aarch64"
-            ;;
           2n-icx|2n-spr)
             dpdk="true"
             trex="true"
             executor_arch="x86_64"
+            ;;
+          2n-grc|3n-alt)
+            dpdk="true"
+            executor_arch="aarch64"
+            ;;
+          3n-oct)
+            executor_arch="aarch64"
             ;;
           2n-aws|2n-c6in)
             executor_arch="x86_64"
