@@ -80,5 +80,3 @@ runs:
         )
 
         echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
-
-        #echo "matrix={\"include\":[{\"node\":\"${{ inputs.node }}\",\"executor_arch\":\"$executor_arch\",\"os\":\"$os\",\"dut\":\"${{ inputs.dut }}\",}]}" >> $GITHUB_OUTPUT

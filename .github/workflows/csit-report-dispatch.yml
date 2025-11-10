@@ -27,6 +27,9 @@ on:
         required: true
         type: choice
         options:
+          - 2n-aws
+          - 2n-c6in
+          - 2n-c7g
           - 2n-emr
           - 2n-grc
           - 2n-icx
@@ -53,11 +56,15 @@ on:
 
 jobs:
   dispatch:
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-latest
+
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+
     steps:
-      - id: set-matrix
+      - name: Prepare node selection matrix
+        id: set-matrix
         uses: pmikus/csit/.github/actions/csit-node-arch@master
         with:
           node: ${{ github.event.inputs.node }}
