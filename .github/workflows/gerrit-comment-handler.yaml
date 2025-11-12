@@ -49,14 +49,25 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  # yamllint disable-line rule:line-length
-  group: ${{ github.workflow }}-${{ inputs.GERRIT_CHANGE_NUMBER }}
-  cancel-in-progress: true
-
 jobs:
-  csit-verify-tox:
-    name: csit-verify-tox
+  dispatch:
+    runs-on:
+      - ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+      - name: Prepare workflow selection matrix
+        id: set-matrix
+        uses: pmikus/csit/.github/actions/csit-comment-dispatch@9a3c5ff604ee585ae842b5b5e037a1dba2d00260
+        with:
+          gerrit_comment: ${{ github.event.inputs.GERRIT_COMMENT }}
+
+  csit-verify-handler:
+    needs: dispatch
+    # yamllint disable-line rule:line-length
+    name: csit-verify-${{ matrix.workflow }}
     runs-on:
       - self-hosted
       - nomad
@@ -64,14 +75,15 @@ jobs:
       - fdio:class=builder
       - fdio:namespace=sandbox
       - fdio:os=${{ matrix.os }}
+    timeout-minutes: 3600
 
     strategy:
-      matrix:
-        os: [ubuntu2404]
-        executor_arch: [x86_64]
+      matrix: ${{ fromJSON(needs.dispatch.outputs.matrix) }}
 
     env:
-      JOB_NAME: ${{ github.job }}
+      # yamllint disable-line rule:line-length
+      JOB_NAME: csit-verify-${{ matrix.workflow }}
+      GERRIT_BRANCH: ${{ github.event.inputs.GERRIT_BRANCH }}
 
     steps:
       - name: Gerrit Checkout
@@ -84,46 +96,16 @@ jobs:
           delay: "30s"
           ref: refs/heads/${{ github.event.inputs.GERRIT_BRANCH }}
 
-      - name: Display workflow inputs
-        run: |
-          echo "Project: ${{ inputs.GERRIT_PROJECT }}"
-          echo "Branch: ${{ inputs.GERRIT_BRANCH }}"
-          echo "Change: ${{ inputs.GERRIT_CHANGE_NUMBER }}"
-          echo "Patchset: ${{ inputs.GERRIT_PATCHSET_NUMBER }}"
-          echo "Refspec: ${{ inputs.GERRIT_REFSPEC }}"
-          echo "Comment: ${{ inputs.GERRIT_COMMENT }}"
-
       - name: Setup Environment
+        # yamllint disable-line rule:line-length
         uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
-      - name: Parse command from comment
-        id: parse
-        run: |
-          # Extract action and command name
-          # Pattern: gha-run <command> [params...]
-          ACTION=$(echo "$COMMENT" | awk '{print $1}' | sed 's/gha-//')
-          WORKFLOW=$(echo "$COMMENT" | awk '{print $2}')
-          PARAMS=$(echo "$COMMENT" | cut -d' ' -f3-)
-          {
-            echo "action=$ACTION"
-            echo "workflow=$WORKFLOW"
-            echo "params=$PARAMS"
-          } >> "$GITHUB_OUTPUT"
-          echo "Action: $ACTION"
-          echo "Workflow: $WORKFLOW"
-          echo "Parameters: $PARAMS"
-
       - name: Run CSIT Bootstrap
-        if: contains(steps.parse.outputs.workflow, 'tox')
+        # yamllint disable-line rule:line-length
         uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
         with:
           bootstrap_script: tox.sh
-
-      - name: Run CSIT Bootstrap
-        if: contains(steps.parse.outputs.workflow, 'perf')
-        uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
-        with:
-          bootstrap_script: bootstrap_verify_perf.sh
+          with_oper: false
 
       - name: Archive Logs
         if: always()
@@ -132,12 +114,3 @@ jobs:
           name: ${{ env.JOB_NAME }}-${{ github.run_number }}
           path: archives/
           if-no-files-found: ignore
-
-      - name: AWS S3 Publish Logs
-        if: always()
-        uses: pmikus/.github/.github/actions/aws-s3-publish-logs@8930b575136625c5c8a47752192f9cd90202bea3
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ${{ vars.AWS_REGION }}
-          s3_bucket: ${{ vars.S3_BUCKET }}

@@ -47,12 +47,17 @@ on:
       branch:
         description: Branch or patch.
         required: true
-        type: string
+        type: choice
+        options:
+          - rls2510
         default: rls2510
       suite_gen_params:
         description: Parameters for the suite generator.
         required: true
         type: string
+
+permissions:
+  contents: read
 
 jobs:
   dispatch:
@@ -65,7 +70,7 @@ jobs:
     steps:
       - name: Prepare node selection matrix
         id: set-matrix
-        uses: pmikus/csit/.github/actions/csit-node-arch@master
+        uses: pmikus/csit/.github/actions/csit-node-arch@9a3c5ff604ee585ae842b5b5e037a1dba2d00260
         with:
           node: ${{ github.event.inputs.node }}
           dut: ${{ github.event.inputs.dut }}
@@ -99,28 +104,28 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Environment
-      # yamllint disable-line rule:line-length
+        # yamllint disable-line rule:line-length
         uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
 
-      #- name: Run Performance Bootstrap
-      #  uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
-      #  with:
-      #    bootstrap_script: bootstrap_verify_perf.sh
-      #    with_oper: false
+      - name: Run Performance Bootstrap
+        uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
+        with:
+          bootstrap_script: bootstrap_verify_perf.sh
+          with_oper: false
 
-      #- name: Archive Logs
-      #  if: always()
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: ${{ env.JOB_NAME }}-${{ github.run_number }}
-      #    path: archives/
-      #    if-no-files-found: ignore
+      - name: Archive Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.JOB_NAME }}-${{ github.run_number }}
+          path: archives/
+          if-no-files-found: ignore
 
-      #- name: AWS S3 Publish Logs
-      #  if: always()
-      #  uses: pmikus/.github/.github/actions/aws-s3-publish-logs@8930b575136625c5c8a47752192f9cd90202bea3
-      #  with:
-      #    aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #    aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #    aws_region: ${{ vars.AWS_REGION }}
-      #    s3_bucket: ${{ vars.S3_BUCKET }}
+      - name: AWS S3 Publish Logs
+        if: always()
+        uses: pmikus/.github/.github/actions/aws-s3-publish-logs@8930b575136625c5c8a47752192f9cd90202bea3
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ vars.AWS_REGION }}
+          s3_bucket: ${{ vars.S3_BUCKET }}
