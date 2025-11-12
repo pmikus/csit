@@ -1,60 +1,59 @@
 ---
-name: "🛠️ CSIT Node/Arch Matrix"
+name: "🛠️ CSIT Comment Dispatch"
 description: |
-  Generates a GitHub Actions matrix for environments based on the selected node
-  configuration and DUT type.
+  Generates a GitHub Actions matrix for environments based on the input from
+  gerrit comment.
 
 inputs:
-  node:
-    description: "CSIT bootstrap node identifier (e.g., 2n-icx, 3n-snr, etc.)."
+  gerrit_comment:
+    description: "Full command line from Gerrit comment."
     required: true
     type: string
-  dut:
-    description: "Target DUT type (e.g., vpp, dpdk, trex)."
-    required: false
-    type: boolean
-    default: "vpp"
 outputs:
   matrix:
     description: "JSON matrix object for GitHub Actions workflow."
-    value: ${{ steps.set-matrix.outputs.matrix }}
+    value: ${{ steps.sparse-params.outputs.matrix }}
+  params:
+    description: "Workflow parameters from gerrit comment."
+    value: ${{ steps.parse-params.outputs.matrix }}
 
 runs:
   using: "composite"
   steps:
-    - name: Set Matrix
-      id: set-matrix
+    - name: Parse parameters
+      id: parse-params
       shell: bash
       run: |
-        node="${{ inputs.node }}"
-        dut="${{ inputs.dut }}"
+        COMMENT="${{ inputs.gerrit_comment }}"
 
-        dpdk="false"
-        trex="false"
-        executor_arch=""
+        if [ -z "$COMMENT" ]; then
+          echo "::error::GERRIT_COMMENT is empty."
+          exit 1
+        fi
+
+        # Pattern: gha-run <command> [params...]
+        read -r gha_cmd command params < <(printf %s $COMMENT)
+
+        if [[ "$gha_cmd" != "gha-run" ]]; then
+          echo "::error::Invalid command prefix. Expected 'gha-run'. Got '$gha_cmd'."
+          exit 1
+        fi
+
+        # Split <command> (expected format: <project>-<dut>-<node>)
+        IFS=- read -r -d '' project dut node < <(printf %s $command)
+
+        if [[ -z "${project:-}" || -z "${dut:-}" || -z "${node:-}" ]]; then
+          echo "::error::Malformed command: '$command'. Expected format '<project>-<dut>-<node>'."
+          exit 1
+        fi
+
         os="ubuntu2404"
 
         case "$node" in
-          2n-emr|2n-zn2|3n-emr|3n-icx|3n-icxd|3n-snr|3na-spr|3nb-spr)
-            dpdk="true"
+          2n-emr|2n-zn2|3n-emr|3n-icx|3n-icxd|3n-snr|3na-spr|3nb-spr|2n-icx|2n-spr|2n-aws|2n-c6in)
             executor_arch="x86_64"
             ;;
-          2n-icx|2n-spr)
-            dpdk="true"
-            trex="true"
-            executor_arch="x86_64"
-            ;;
-          2n-grc|3n-alt)
-            dpdk="true"
-            executor_arch="aarch64"
-            ;;
-          3n-oct)
-            executor_arch="aarch64"
-            ;;
-          2n-aws|2n-c6in)
-            executor_arch="x86_64"
-            ;;
-          2n-c7gn)
+          2n-grc|3n-alt|3n-oct|2n-c7gn)
             executor_arch="aarch64"
             ;;
           *)
@@ -62,17 +61,6 @@ runs:
             exit 1
             ;;
         esac
-
-        # Validate DUT compatibility
-        if [[ "$dut" == "trex" && "$trex" == "false" ]]; then
-          echo "::error::Unsupported Trex/Node combination ($node)."
-          exit 1
-        fi
-
-        if [[ "$dut" == "dpdk" && "$dpdk" == "false" ]]; then
-          echo "::error::Unsupported DPDK/Node combination ($node)."
-          exit 1
-        fi
 
         matrix_json=$(jq -nc \
           --arg node "$node" \
@@ -82,4 +70,7 @@ runs:
           '{include: [{node: $node, executor_arch: $executor_arch, os: $os, dut: $dut}]}'
         )
 
-        echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+        {
+          echo "matrix=$matrix_json"
+          echo "params=$params"
+        } >> "$GITHUB_OUTPUT"
