@@ -24,6 +24,7 @@ runs:
       id: parse-params
       shell: bash
       run: |
+        set -ex
         COMMENT="${{ inputs.gerrit_comment }}"
 
         if [ -z "$COMMENT" ]; then
