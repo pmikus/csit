@@ -32,7 +32,7 @@ runs:
         fi
 
         # Pattern: gha-run <command> [params...]
-        read -r gha_cmd command params < <(printf %s $COMMENT)
+        read -r gha_cmd command params <<<"${COMMENT}"
 
         if [[ "$gha_cmd" != "gha-run" ]]; then
           echo "::error::Invalid command prefix. Expected 'gha-run'. Got '$gha_cmd'."
