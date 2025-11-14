@@ -35,6 +35,7 @@ jobs:
           - node: 3n-icxd
             os: ubuntu2404
             executor_arch: x86_64
+      fail-fast: false
 
     env:
       JOB_NAME: ${{ github.job }}-master-${{ matrix.node }}
@@ -52,7 +53,7 @@ jobs:
 
       - name: Run CSIT Bootstrap
         # yamllint disable-line rule:line-length
-        uses: fdio/csit/.github/actions/csit-bootstrap@3835964003f751ea545d7926f46fade5e9e5da13
+        uses: fdio/csit/.github/actions/csit-bootstrap@545d8493b5cc86e6bef799219c558f5a0709709c
         with:
           bootstrap_script: bootstrap_verify_perf.sh
           with_oper: true
