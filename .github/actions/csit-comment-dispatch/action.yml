@@ -15,7 +15,7 @@ outputs:
     value: ${{ steps.sparse-params.outputs.matrix }}
   params:
     description: "Workflow parameters from gerrit comment."
-    value: ${{ steps.parse-params.outputs.matrix }}
+    value: ${{ steps.parse-params.outputs.params }}
 
 runs:
   using: "composite"
