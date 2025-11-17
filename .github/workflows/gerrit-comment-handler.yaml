@@ -99,7 +99,7 @@ jobs:
 
       - name: Setup Environment
         # yamllint disable-line rule:line-length
-        uses: pmikus/.github/.github/actions/setup-executor-env@8930b575136625c5c8a47752192f9cd90202bea3
+        uses: pmikus/.github/.github/actions/setup-executor-env@d2c8485d9e23e6c439c8eebae3f8101fb48fcb86
 
       - name: Debug
         shell: bash
@@ -109,15 +109,15 @@ jobs:
 
       #- name: Run CSIT Bootstrap
       #  # yamllint disable-line rule:line-length
-      #  uses: fdio/csit/.github/actions/csit-bootstrap@70284bc14f3f8a310b24c26e52cb31fbf4f2e50b
+      #  uses: uses: fdio/csit/.github/actions/csit-bootstrap@a372372ca8f89676c55631f8650468dfab86cc2a
       #  with:
-      #    bootstrap_script: tox.sh
+      #    bootstrap_script: bootstrap_verify_perf.sh
       #    with_oper: false
 
       #- name: Archive Logs
       #  if: ${{ always() }}
       #  uses: actions/upload-artifact@v4
       #  with:
-      #    name: ${{ env.JOB_NAME }}-${{ github.run_number }}
+      #    name: ${{ github.job }}-master-${{ matrix.node }}-${{ github.run_id }}
       #    path: archives/
       #    if-no-files-found: ignore

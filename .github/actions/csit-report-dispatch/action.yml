@@ -1,5 +1,5 @@
 ---
-name: "🛠️ CSIT Node/Arch Matrix"
+name: "🛠️ CSIT Report Dispatch Matrix"
 description: |
   Generates a GitHub Actions matrix for environments based on the selected node
   configuration and DUT type.

@@ -1,4 +1,4 @@
-# 🛠️ CSIT Node/Arch Matrix
+# 🛠️ CSIT Report Dispatch Matrix
 
 Generates a GitHub Actions matrix for environments based on the selected node
 configuration and DUT type.
@@ -10,7 +10,7 @@ An example workflow step using this action:
 <!-- markdownlint-disable MD013 -->
 ```yaml
 - name: Prepare node selection matrix
-  uses: fdio/csit/.github/actions/csit-node-arch@master
+  uses: fdio/csit/.github/actions/csit-report-dispatch@master
 ```
 <!-- markdownlint-enable MD013 -->
 
