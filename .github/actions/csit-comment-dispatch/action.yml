@@ -45,7 +45,9 @@ runs:
         echo $params
 
         # Split <command> (expected format: <project>-<dut>-<node>)
+        set +e
         IFS=- read -r -d '' project dut node < <(printf %s $command)
+        set -e
 
         if [[ -z "${project:-}" || -z "${dut:-}" || -z "${node:-}" ]]; then
           echo "::error::Malformed command: '$command'. Expected format '<project>-<dut>-<node>'."
