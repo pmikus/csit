@@ -40,6 +40,10 @@ runs:
           exit 1
         fi
 
+        echo $gha_cmd
+        echo $command
+        echo $params
+
         # Split <command> (expected format: <project>-<dut>-<node>)
         IFS=- read -r -d '' project dut node < <(printf %s $command)
 
