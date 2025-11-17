@@ -40,10 +40,6 @@ runs:
           exit 1
         fi
 
-        echo $gha_cmd
-        echo $command
-        echo $params
-
         # Split <command> (expected format: <project>-<dut>-<node>)
         set +e
         IFS=- read -r -d '' project dut node < <(printf %s $command)
@@ -54,13 +50,13 @@ runs:
           exit 1
         fi
 
-        os="ubuntu2404"
-
         case "$node" in
           2n-emr|2n-zn2|3n-emr|3n-icx|3n-icxd|3n-snr|3na-spr|3nb-spr|2n-icx|2n-spr|2n-aws|2n-c6in)
+            os="ubuntu2404"
             executor_arch="x86_64"
             ;;
           2n-grc|3n-alt|3n-oct|2n-c7gn)
+            os="ubuntu2404"
             executor_arch="aarch64"
             ;;
           *)
@@ -77,7 +73,5 @@ runs:
           '{include: [{node: $node, executor_arch: $executor_arch, os: $os, dut: $dut}]}'
         )
 
-        {
-          echo "matrix=$matrix_json"
-          echo "params=$params"
-        } >> "$GITHUB_OUTPUT"
+        echo "matrix=$matrix_json" > "$GITHUB_OUTPUT"
+        echo "params=$params" > "$GITHUB_OUTPUT"
