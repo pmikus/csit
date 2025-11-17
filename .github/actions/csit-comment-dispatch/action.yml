@@ -73,5 +73,5 @@ runs:
           '{include: [{node: $node, executor_arch: $executor_arch, os: $os, dut: $dut}]}'
         )
 
-        echo "matrix=$matrix_json" > "$GITHUB_OUTPUT"
-        echo "params=$params" > "$GITHUB_OUTPUT"
+        echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+        echo "params=$params" >> "$GITHUB_OUTPUT"
