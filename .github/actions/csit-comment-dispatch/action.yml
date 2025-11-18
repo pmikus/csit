@@ -13,9 +13,6 @@ outputs:
   matrix:
     description: "JSON matrix object for GitHub Actions workflow."
     value: ${{ steps.sparse-params.outputs.matrix }}
-  params:
-    description: "Workflow parameters from gerrit comment."
-    value: ${{ steps.parse-params.outputs.params }}
 
 runs:
   using: "composite"
@@ -73,3 +70,5 @@ runs:
           --arg params "$params" \
           '{include: [{node: $node, executor_arch: $executor_arch, os: $os, dut: $dut, params: $params}]}'
         )
+
+        echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
