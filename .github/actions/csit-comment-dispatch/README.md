@@ -1,4 +1,4 @@
-# 🛠️ CSIT Node/Arch Matrix
+# 🛠️ CSIT Comment Dispatch
 
 Generates a GitHub Actions matrix for environments based on the selected node
 configuration and DUT type.
@@ -10,7 +10,7 @@ An example workflow step using this action:
 <!-- markdownlint-disable MD013 -->
 ```yaml
 - name: Prepare node selection matrix
-  uses: fdio/csit/.github/actions/csit-node-arch@master
+  uses: fdio/csit/.github/actions/csit-comment-dispatch@master
 ```
 <!-- markdownlint-enable MD013 -->
 
@@ -18,10 +18,9 @@ An example workflow step using this action:
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name | Description                                                  |
-| ------------- | ------------------------------------------------------------ |
-| node          | CSIT bootstrap node identifier (e.g., 2n-icx, 3n-snr, etc.). |
-| dut           | Target DUT type (e.g., vpp, dpdk, trex).                     |
+| Variable Name  | Description                            |
+| -------------- | -------------------------------------- |
+| gerrit_comment | Full command line from Gerrit comment. |
 
 <!-- markdownlint-enable MD013 -->
 
@@ -29,9 +28,10 @@ An example workflow step using this action:
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name | Description                                                  |
-| ------------- | ------------------------------------------------------------ |
-| output        | JSON matrix object for GitHub Actions workflow.              |
+| Variable Name | Description                                     |
+| ------------- | ----------------------------------------------- |
+| matrix        | JSON matrix object for GitHub Actions workflow. |
+| params        | Parameters for workflow.                        |
 
 <!-- markdownlint-enable MD013 -->
 

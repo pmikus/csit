@@ -63,6 +63,7 @@ jobs:
 
     env:
       JOB_NAME: ${{ github.job }}-master-${{ matrix.node }}
+      # yamllint disable-line rule:line-length
       BUILD_TAG: ${{ github.job }}-master-${{ matrix.node }}-${{ github.run_id }}
 
     steps:

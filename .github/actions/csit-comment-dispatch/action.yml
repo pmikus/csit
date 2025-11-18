@@ -14,7 +14,7 @@ outputs:
     description: "JSON matrix object for GitHub Actions workflow."
     value: ${{ steps.parse-params.outputs.matrix }}
   params:
-    description: "JSON matrix object for GitHub Actions workflow."
+    description: "Parameters for workflow."
     value: ${{ steps.parse-params.outputs.params }}
 
 
@@ -25,7 +25,6 @@ runs:
       id: parse-params
       shell: bash
       run: |
-        set -ex
         COMMENT="${{ inputs.gerrit_comment }}"
 
         if [ -z "$COMMENT" ]; then
