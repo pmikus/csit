@@ -56,6 +56,7 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      params: ${{ steps.set-matrix.outputs.params }}
 
     steps:
       - name: Prepare workflow selection matrix
@@ -104,6 +105,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ needs.dispatch.outputs.matrix }}
+          echo "${{ needs.dispatch.outputs.params }}
 
       #- name: Run CSIT Bootstrap
       #  # yamllint disable-line rule:line-length

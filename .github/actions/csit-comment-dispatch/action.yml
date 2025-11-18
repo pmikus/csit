@@ -12,7 +12,11 @@ inputs:
 outputs:
   matrix:
     description: "JSON matrix object for GitHub Actions workflow."
-    value: ${{ steps.sparse-params.outputs.matrix }}
+    value: ${{ steps.parse-params.outputs.matrix }}
+  params:
+    description: "JSON matrix object for GitHub Actions workflow."
+    value: ${{ steps.parse-params.outputs.params }}
+
 
 runs:
   using: "composite"
@@ -72,3 +76,4 @@ runs:
         )
 
         echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+        echo "params=$params" >> "$GITHUB_OUTPUT"
