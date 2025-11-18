@@ -70,10 +70,6 @@ runs:
           --arg executor_arch "$executor_arch" \
           --arg os "$os" \
           --arg dut "$dut" \
-          '{include: [{node: $node, executor_arch: $executor_arch, os: $os, dut: $dut}]}'
+          --arg params "$params" \
+          '{include: [{node: $node, executor_arch: $executor_arch, os: $os, dut: $dut, params: $params}]}'
         )
-
-        {
-          "matrix=$matrix_json"
-          "params=$params"
-        } >> $GITHUB_OUTPUT

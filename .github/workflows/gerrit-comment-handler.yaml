@@ -56,7 +56,6 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      params: ${{ steps.set-matrix.outputs.params }}
 
     steps:
       - name: Prepare workflow selection matrix
@@ -68,7 +67,7 @@ jobs:
   csit-verify-handler:
     needs: dispatch
     # yamllint disable-line rule:line-length
-    name: csit-verify-${{ matrix.workflow }}
+    name: csit-${{ matrix.dut }}-perf-verify-${{ matrix.node }}
     runs-on:
       - self-hosted
       - nomad
@@ -83,7 +82,7 @@ jobs:
 
     env:
       # yamllint disable-line rule:line-length
-      JOB_NAME: csit-verify-${{ matrix.workflow }}
+      JOB_NAME: csit-${{ matrix.dut }}-perf-verify-${{ matrix.node }}
       GERRIT_BRANCH: ${{ github.event.inputs.GERRIT_BRANCH }}
 
     steps:
@@ -105,7 +104,6 @@ jobs:
         shell: bash
         run: |
           echo "${{ needs.dispatch.outputs.matrix }}
-          echo "${{ needs.dispatch.outputs.params }}
 
       #- name: Run CSIT Bootstrap
       #  # yamllint disable-line rule:line-length
@@ -118,6 +116,6 @@ jobs:
       #  if: ${{ always() }}
       #  uses: actions/upload-artifact@v4
       #  with:
-      #    name: ${{ github.job }}-master-${{ matrix.node }}-${{ github.run_id }}
+      #    name: csit-${{ matrix.dut }}-perf-verify-${{ matrix.node }}-${{ github.run_id }}
       #    path: archives/
       #    if-no-files-found: ignore
