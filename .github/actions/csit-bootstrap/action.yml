@@ -17,6 +17,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Setup Environment
+      # yamllint disable-line rule:line-length
+      uses: pmikus/.github/.github/actions/setup-executor-env@d2c8485d9e23e6c439c8eebae3f8101fb48fcb86
+
     - name: Run Bootstrap
       id: bootstrap
       shell: bash
