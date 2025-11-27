@@ -14,6 +14,7 @@ jobs:
       - self-hosted
       - nomad
       - fdio:arch=x86_64
+      - fdio:namespace=sandbox
       - fdio:os=ubuntu2404
     timeout-minutes: 3600
 
